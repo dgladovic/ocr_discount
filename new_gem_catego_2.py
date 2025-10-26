@@ -1,7 +1,6 @@
 import os
 import io
 import json
-import sys
 import glob
 import re
 from datetime import datetime
@@ -21,6 +20,26 @@ PAGE_CHUNK_SIZE = 30
 
 # Ensure the output directory exists
 os.makedirs(OUTPUT_JSON_DIR, exist_ok=True)
+
+# --- PREDETERMINED CATEGORIES & ENUM ---
+PREDETERMINED_CATEGORIES = [ 
+    "Fresh Produce (Obst & Gemüse)", 
+    "Meat & Poultry (Fleisch & Geflügel)", 
+    "Fish & Seafood (Fisch)", 
+    "Dairy & Eggs (Milchprodukte & Eier)", 
+    "Frozen Foods (Tiefkühl)", 
+    "Pantry & Baking (Grundnahrungsmittel)", 
+    "Drinks & Beverages (Getränke)", 
+    "Snacks & Confectionery (Süßwaren & Snacks)", 
+    "Household & Cleaning (Haushalt)", 
+    "Pet Supplies (Tiernahrung)", 
+    "Health & Beauty (Drogerie)", 
+    "Bread & Bakery (Brot & Gebäck)", 
+    "Miscellaneous" 
+]
+# Extract the clean category names to be used as a strict ENUM for the model
+NORMALIZED_CATEGORY_ENUM = [c.split(' (')[0].strip() for c in PREDETERMINED_CATEGORIES]
+
 
 # --- HELPER FUNCTIONS FOR POST-PROCESSING (Cleaning and Normalization) ---
 
@@ -86,7 +105,7 @@ def parse_start_date(date_range_str: str, end_date_str: str) -> str:
 def post_process_data(raw_data: dict, pdf_filename: str) -> dict:
     """
     Takes the model's raw JSON output and refines it for PostgreSQL import.
-    - Generates productHash (unique stable ID slug).
+    - Generates productHash (unique stable ID slug) deterministically.
     - Parses dates (offerStartDate, offerEndDate).
     - Converts prices to numeric floats.
     """
@@ -110,9 +129,9 @@ def post_process_data(raw_data: dict, pdf_filename: str) -> dict:
     processed_offers = []
     
     for offer in raw_data.get('productOffers', []):
-        # 1. GENERATE UNIQUE PRODUCT HASH (Used for future linking to the 'products' master table)
-        # This hash guarantees that 'Whole Milk 1L' is different from 'Skim Milk 1L'.
-        product_key = f"{offer.get('productName', '')}|{offer.get('packageSize', '')}|{offer.get('category', '')}"
+        # 1. GENERATE UNIQUE PRODUCT HASH (Deterministic and stable identifier)
+        # The model cleaned the input fields, now we generate the hash from them.
+        product_key = f"{offer.get('productName', '')}|{offer.get('category', '')}"
         offer['productHash'] = slugify(product_key)
         
         # 2. PARSE DATES (for transactional data)
@@ -144,16 +163,25 @@ def post_process_data(raw_data: dict, pdf_filename: str) -> dict:
 PRODUCT_OFFER_SCHEMA = {
     "type": "OBJECT",
     "properties": {
-        "productName": {"type": "STRING", "description": "The name of the item on offer."},
-        "category": {"type": "STRING", "description": "Determine the most specific food or product category (e.g., 'Meat & Poultry', 'Baked Goods', 'Dairy')."},
+        "productName": {"type": "STRING", "description": "The name of the item on offer, cleaned of any price, date, or clutter text."},
+        "category": {
+            "type": "STRING", 
+            "description": "STRICTLY choose the most specific food or product category from the provided ENUM list.",
+            "enum": NORMALIZED_CATEGORY_ENUM # This forces strict categorization (e.g., 'Dairy & Eggs')
+        },
+        "searchTags": {
+            "type": "ARRAY", 
+            "items": {"type": "STRING"}, 
+            "description": "A list of 5-10 descriptive, multilingual keywords for fuzzy searching (e.g., ['milk', 'milch', 'dairy', 'drink', 'vollmilch']). This is required for search indexing."
+        },
         "currentPrice": {"type": "STRING", "description": "The current promotional price, including currency (e.g., 5.99€)."},
-        "oldPrice": {"type": "STRING", "description": "The original, non-sale price before discount (e.g., 7.99€). If the old price is not visible, use 'N/A'."},
-        "packageSize": {"type": "STRING", "description": "The size of the product package (e.g., '530 g', '1 kg', '3 pcs', '1 liter')."},
+        "originalPrice": {"type": "STRING", "description": "The original, non-sale price before discount (e.g., 7.99€). If the original price is not visible, use 'N/A'."},
+        "packageSize": {"type": "STRING", "description": "The size of the product package (e.g., '530 g', '3 pcs', '1 liter')."},
         "unitPrice": {"type": "STRING", "description": "The price per standardized unit, usually per kg or per liter (e.g., '11.30/kg'). If not found, use 'N/A'."},
         "discount": {"type": "STRING", "description": "The discount amount or percentage (e.g., 25% off or -1.00€). If not found, use 'N/A'."},
-        "availabilityDateRange": {"type": "STRING", "description": "The start and end date of the offer (e.g., '20.10. - 22.10.' or 'Mon-Wed'). If not found, use 'N/A'."}
+        "availabilityDateRange": {"type": "STRING", "description": "The start and end date of the offer as it appears on the flyer (e.g., '20.10. - 22.10.' or 'Mon-Wed'). If not found, use 'N/A'."}
     },
-    "required": ["productName", "category", "currentPrice", "packageSize", "availabilityDateRange"] 
+    "required": ["productName", "category", "searchTags", "currentPrice", "packageSize", "availabilityDateRange", "discount"] 
 }
 
 CATEGORY_ANNOUNCEMENT_SCHEMA = {
@@ -185,7 +213,7 @@ FLYER_DATA_SCHEMA = {
     "required": ["productOffers", "categoryAnnouncements"]
 }
 
-# --- LOG MANAGEMENT FUNCTIONS ---
+# --- LOG MANAGEMENT FUNCTIONS (No change needed) ---
 
 def load_processed_log():
     """Loads the set of previously processed PDF filenames."""
@@ -206,7 +234,7 @@ def save_processed_log(processed_files):
     except Exception as e:
         print(f"CRITICAL ERROR: Could not save log file: {e}")
 
-# --- BATCH PROCESSING HELPER ---
+# --- BATCH PROCESSING HELPER (No change needed) ---
 
 def chunk_list(data: list, size: int):
     """Yield successive n-sized chunks from a list."""
@@ -226,6 +254,7 @@ def analyze_pdf_with_gemini_vision(client: genai.Client, pdf_file_path: str, out
         # 1. Convert PDF pages to images
         print(f"--- 1. Splitting '{pdf_filename}' into high-DPI images... ---")
         try:
+            # We use 300 DPI for high-quality OCR
             pages = convert_from_path(pdf_file_path, dpi=300) 
         except Exception as e:
             print(f"ERROR: PDF conversion failed. Is Poppler Utils installed correctly?")
@@ -247,6 +276,7 @@ def analyze_pdf_with_gemini_vision(client: genai.Client, pdf_file_path: str, out
             # --- Upload images for the current chunk ---
             chunk_files = []
             for i, page_image in enumerate(page_chunk):
+                # ... image processing and upload logic ...
                 page_num = start_page + i
                 img_byte_arr = io.BytesIO()
                 page_image.save(img_byte_arr, format='PNG') 
@@ -260,21 +290,29 @@ def analyze_pdf_with_gemini_vision(client: genai.Client, pdf_file_path: str, out
             
             print(f"    Uploaded {len(chunk_files)} images for this chunk.")
 
-            # --- Create prompt and send API request ---
+            # --- Create prompt and send API request (UPDATED PROMPT) ---
             prompt_text = (
-                "You are an expert retail data extraction agent. "
-                "Analyze the provided high-resolution flyer images (this is a batch of pages from a larger flyer). "
-                "Your task is to perform meticulous **OCR** and **structured data extraction**. "
-                "1. Identify and extract data for every distinct **individual product offer** (e.g., Milk, Bread, Cheese) found across these specific pages. "
-                "2. Identify and extract data for every **category-wide promotional announcement** (e.g., '25% off all frozen goods'). "
-                "3. For optional fields like 'oldPrice', 'unitPrice', or 'discount', use the string **'N/A'** if the information is not explicitly visible in the image. "
-                "The output MUST be a single JSON object that strictly conforms to the provided schema."
+                """
+                You are an expert Retail Data Normalization Engine. 
+                Analyze the provided high-resolution flyer images (this is a batch of pages from a larger flyer). 
+                Your task is to perform meticulous **OCR**, **structured data extraction**, and **data enrichment**. 
+
+                1. Identify and extract data for every distinct **individual product offer**. 
+                2. Identify and extract data for every **category-wide promotional announcement**. 
+                3. **Normalization Rule (Category):** For the 'category' field, you MUST strictly choose a value from the provided ENUM list in the schema. Do not invent new categories.
+                4. **Enrichment Rule (Search Tags):** For every product offer, generate a list of 5-10 descriptive, multilingual keywords (e.g., ['milk', 'milch', 'dairy', 'drink', 'vollmilch']) and assign them to the `searchTags` field for fuzzy search indexing.
+                5. For optional fields like 'originalPrice', 'unitPrice', or 'discount', use the string **'N/A'** if the information is not explicitly visible in the image. 
+                6. Ensure 'productName' is clean and free of price or date clutter. 
+
+                The output MUST be a single JSON object that strictly conforms to the provided schema.
+                """
             )
             
             contents = chunk_files + [prompt_text]
             
             print("    Sending query to Gemini for structured extraction...")
 
+            # API Call with Structured Output Configuration
             response = client.models.generate_content(
                 model=API_MODEL,
                 contents=contents,
@@ -306,6 +344,7 @@ def analyze_pdf_with_gemini_vision(client: genai.Client, pdf_file_path: str, out
         print("3. Post-Processing and Saving Structured JSON Output")
         print(f"Final total offers collected: {len(combined_raw_data['productOffers'])}")
         
+        # Post-processing performs deterministic tasks: Price/Date conversion and Hash generation
         final_data = post_process_data(combined_raw_data, pdf_filename)
         
         output_filepath = os.path.join(OUTPUT_JSON_DIR, output_json_name)
@@ -348,7 +387,7 @@ def process_active_flyers():
         return
 
     processed_files = load_processed_log()
-    print(f"\n--- Categorizer Started ---")
+    print(f"\n--- Retail Data Categorizer Started ---")
     print(f"1. Loaded {len(processed_files)} previously processed file IDs (to skip API calls).")
     
     pdf_files = glob.glob(os.path.join(DOWNLOAD_DIR, "*.pdf"))
