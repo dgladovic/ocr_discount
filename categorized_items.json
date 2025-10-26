@@ -1,0 +1,2162 @@
+[
+  {
+    "productName": "Bio Trauben hell kernlos",
+    "category": "Fruits",
+    "currentPrice": "1.99€",
+    "oldPrice": "2.99€",
+    "packageSize": "500 g",
+    "unitPrice": "3.98/kg",
+    "discount": "33% off",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Petersilie",
+    "category": "Vegetables",
+    "currentPrice": "0.99€",
+    "oldPrice": "1.99€",
+    "packageSize": "Bund",
+    "unitPrice": "N/A",
+    "discount": "50% off",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Champignons weiß",
+    "category": "Vegetables",
+    "currentPrice": "1.29€",
+    "oldPrice": "1.99€",
+    "packageSize": "500 g",
+    "unitPrice": "2.58/kg",
+    "discount": "35% off",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Äpfel rot aus Österreich",
+    "category": "Fruits",
+    "currentPrice": "1.79€",
+    "oldPrice": "2.79€",
+    "packageSize": "1,5 kg",
+    "unitPrice": "1.19/kg",
+    "discount": "36% off",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Marillenspitz",
+    "category": "Baked Goods",
+    "currentPrice": "0.89€",
+    "oldPrice": "1.29€",
+    "packageSize": "Stück",
+    "unitPrice": "N/A",
+    "discount": "31% off",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Kartoffelbrot mit Röstzwiebel",
+    "category": "Baked Goods",
+    "currentPrice": "1.39€",
+    "oldPrice": "N/A",
+    "packageSize": "350 g",
+    "unitPrice": "3.97/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Käsesemmel",
+    "category": "Baked Goods",
+    "currentPrice": "0.52€",
+    "oldPrice": "N/A",
+    "packageSize": "Stück",
+    "unitPrice": "N/A",
+    "discount": "N/A",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Frisches Siedefleisch",
+    "category": "Meat & Poultry",
+    "currentPrice": "8.59€",
+    "oldPrice": "12.03€",
+    "packageSize": "708 kg",
+    "unitPrice": "12.13/kg",
+    "discount": "29% off",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Frische Hendl Oberkeulenschnitzel",
+    "category": "Meat & Poultry",
+    "currentPrice": "7.99€",
+    "oldPrice": "N/A",
+    "packageSize": "1 kg",
+    "unitPrice": "7.99/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Frisches Schweinefilet",
+    "category": "Meat & Poultry",
+    "currentPrice": "5.99€",
+    "oldPrice": "N/A",
+    "packageSize": "530 g",
+    "unitPrice": "11.30/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Frische Putenbrustschnitzel",
+    "category": "Meat & Poultry",
+    "currentPrice": "8.49€",
+    "oldPrice": "N/A",
+    "packageSize": "1 kg",
+    "unitPrice": "8.49/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Frische Forelle im Doppelpack",
+    "category": "Fish & Seafood",
+    "currentPrice": "6.49€",
+    "oldPrice": "N/A",
+    "packageSize": "511 g",
+    "unitPrice": "10.98/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Adventkalender",
+    "category": "Sweets & Snacks",
+    "currentPrice": "1.39€",
+    "oldPrice": "N/A",
+    "packageSize": "65 g",
+    "unitPrice": "21.38/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Mix Adventkalender Stern",
+    "category": "Sweets & Snacks",
+    "currentPrice": "5.99€",
+    "oldPrice": "N/A",
+    "packageSize": "149 g",
+    "unitPrice": "40.20/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Adventkalender",
+    "category": "Sweets & Snacks",
+    "currentPrice": "5.99€",
+    "oldPrice": "N/A",
+    "packageSize": "210 g",
+    "unitPrice": "28.52/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Adventkalender",
+    "category": "Sweets & Snacks",
+    "currentPrice": "1.99€",
+    "oldPrice": "N/A",
+    "packageSize": "75 g",
+    "unitPrice": "26.53/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Naps Adventkalender",
+    "category": "Sweets & Snacks",
+    "currentPrice": "5.99€",
+    "oldPrice": "N/A",
+    "packageSize": "119,6 g",
+    "unitPrice": "50.08/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Allerheiligen Striezel",
+    "category": "Baked Goods",
+    "currentPrice": "2.99€",
+    "oldPrice": "N/A",
+    "packageSize": "650 g",
+    "unitPrice": "4.60/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Speckwürfel oder -stifterl",
+    "category": "Meat & Poultry",
+    "currentPrice": "2.99€",
+    "oldPrice": "3.99€",
+    "packageSize": "130/200 g",
+    "unitPrice": "23.00/14.95 kg",
+    "discount": "25% off",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Farmerschinken",
+    "category": "Meat & Poultry",
+    "currentPrice": "2.39€",
+    "oldPrice": "3.29€",
+    "packageSize": "175 g",
+    "unitPrice": "13.66/kg",
+    "discount": "27% off",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Pausenstangerl",
+    "category": "Meat & Poultry",
+    "currentPrice": "1.79€",
+    "oldPrice": "2.39€",
+    "packageSize": "90 g",
+    "unitPrice": "19.89/kg",
+    "discount": "25% off",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Frische Tortelloni",
+    "category": "Pantry & Prepared Foods",
+    "currentPrice": "1.59€",
+    "oldPrice": "1.99€",
+    "packageSize": "400 g",
+    "unitPrice": "3.98/kg",
+    "discount": "20% off",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Frühstücksfleisch",
+    "category": "Meat & Poultry",
+    "currentPrice": "1.99€",
+    "oldPrice": "2.99€",
+    "packageSize": "340 g",
+    "unitPrice": "5.85/kg",
+    "discount": "33% off",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Nutella",
+    "category": "Sweets & Snacks",
+    "currentPrice": "4.99€",
+    "oldPrice": "N/A",
+    "packageSize": "750 g",
+    "unitPrice": "6.65/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Nutella",
+    "category": "Sweets & Snacks",
+    "currentPrice": "5.89€",
+    "oldPrice": "N/A",
+    "packageSize": "750 g",
+    "unitPrice": "7.85/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Fischstäbchen",
+    "category": "Fish & Seafood",
+    "currentPrice": "4.99€",
+    "oldPrice": "5.99€",
+    "packageSize": "364/450 g",
+    "unitPrice": "13.71/11.09 kg",
+    "discount": "17% off",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Fischstäbchen",
+    "category": "Fish & Seafood",
+    "currentPrice": "3.99€",
+    "oldPrice": "5.99€",
+    "packageSize": "364/450 g",
+    "unitPrice": "10.96/8.87 kg",
+    "discount": "33% off",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Riesengermknödel",
+    "category": "Frozen Food",
+    "currentPrice": "2.39€",
+    "oldPrice": "2.99€",
+    "packageSize": "560 g",
+    "unitPrice": "4.27/kg",
+    "discount": "20% off",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Picco Pizzi 12er",
+    "category": "Frozen Food",
+    "currentPrice": "2.39€",
+    "oldPrice": "2.99€",
+    "packageSize": "360 g",
+    "unitPrice": "6.64/kg",
+    "discount": "20% off",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Mineralwasser",
+    "category": "Beverages (Non-alcoholic)",
+    "currentPrice": "0.16€",
+    "oldPrice": "N/A",
+    "packageSize": "0,5 l",
+    "unitPrice": "0.32/l",
+    "discount": "N/A",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Präsident",
+    "category": "Coffee",
+    "currentPrice": "7.99€",
+    "oldPrice": "11.99€",
+    "packageSize": "500 g",
+    "unitPrice": "15.98/kg",
+    "discount": "33% off",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Präsident",
+    "category": "Coffee",
+    "currentPrice": "8.99€",
+    "oldPrice": "11.99€",
+    "packageSize": "500 g",
+    "unitPrice": "17.98/kg",
+    "discount": "25% off",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Knabbergebäck",
+    "category": "Sweets & Snacks",
+    "currentPrice": "0.99€",
+    "oldPrice": "1.99€",
+    "packageSize": "80 g",
+    "unitPrice": "12.38/kg",
+    "discount": "50% off",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Knabbergebäck",
+    "category": "Sweets & Snacks",
+    "currentPrice": "1.29€",
+    "oldPrice": "1.99€",
+    "packageSize": "80 g",
+    "unitPrice": "16.13/kg",
+    "discount": "35% off",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Schoko Snack oder Fresh Milk-Snack",
+    "category": "Sweets & Snacks",
+    "currentPrice": "0.99€",
+    "oldPrice": "N/A",
+    "packageSize": "4x 29/27 g",
+    "unitPrice": "8.53/9.17 kg",
+    "discount": "N/A",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Debreziner",
+    "category": "Meat & Poultry",
+    "currentPrice": "6.99€",
+    "oldPrice": "N/A",
+    "packageSize": "1 kg",
+    "unitPrice": "6.99/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Feine Extrawurst",
+    "category": "Meat & Poultry",
+    "currentPrice": "1.79€",
+    "oldPrice": "N/A",
+    "packageSize": "250 g",
+    "unitPrice": "7.16/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Fruchtzwerge Big Pack",
+    "category": "Dairy & Cheese",
+    "currentPrice": "2.59€",
+    "oldPrice": "N/A",
+    "packageSize": "6x 100 g",
+    "unitPrice": "4.31/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Hausgemachte Grammeln",
+    "category": "Meat & Poultry",
+    "currentPrice": "2.99€",
+    "oldPrice": "N/A",
+    "packageSize": "150 g",
+    "unitPrice": "19.93/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Culinesse",
+    "category": "Oils & Fats",
+    "currentPrice": "2.49€",
+    "oldPrice": "N/A",
+    "packageSize": "750 ml",
+    "unitPrice": "3.32/l",
+    "discount": "N/A",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Mozzarella in Scheiben",
+    "category": "Dairy & Cheese",
+    "currentPrice": "8.99€",
+    "oldPrice": "N/A",
+    "packageSize": "1 kg",
+    "unitPrice": "8.99/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Gouda im Stück",
+    "category": "Dairy & Cheese",
+    "currentPrice": "7.99€",
+    "oldPrice": "N/A",
+    "packageSize": "1 kg",
+    "unitPrice": "7.99/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Mozzarella",
+    "category": "Dairy & Cheese",
+    "currentPrice": "0.99€",
+    "oldPrice": "N/A",
+    "packageSize": "125 g",
+    "unitPrice": "7.92/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Schwedenbomben",
+    "category": "Sweets & Snacks",
+    "currentPrice": "5.99€",
+    "oldPrice": "N/A",
+    "packageSize": "360 g",
+    "unitPrice": "16.64/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Honig- oder Honig-Kakao-Kugeln",
+    "category": "Sweets & Snacks",
+    "currentPrice": "7.49€",
+    "oldPrice": "N/A",
+    "packageSize": "470 g",
+    "unitPrice": "15.94/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Manner Produkte",
+    "category": "Sweets & Snacks",
+    "currentPrice": "2.49€",
+    "oldPrice": "N/A",
+    "packageSize": "N/A",
+    "unitPrice": "N/A",
+    "discount": "N/A",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Limonade",
+    "category": "Beverages (Non-alcoholic)",
+    "currentPrice": "0.44€",
+    "oldPrice": "N/A",
+    "packageSize": "0,33 l",
+    "unitPrice": "1.33/l",
+    "discount": "N/A",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Sirup",
+    "category": "Beverages (Non-alcoholic)",
+    "currentPrice": "2.49€",
+    "oldPrice": "N/A",
+    "packageSize": "0,7 l",
+    "unitPrice": "3.56/l",
+    "discount": "N/A",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Maggi Fix Air Fryer",
+    "category": "Pantry & Condiments",
+    "currentPrice": "0.89€",
+    "oldPrice": "N/A",
+    "packageSize": "27-44 g",
+    "unitPrice": "32.96-20.23/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Katzen- oder Hundefutter/Katzenstreu",
+    "category": "Pet Supplies",
+    "currentPrice": "0.59€",
+    "oldPrice": "N/A",
+    "packageSize": "N/A",
+    "unitPrice": "N/A",
+    "discount": "N/A",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Duftkerzen",
+    "category": "Household & Personal Care",
+    "currentPrice": "2.99€",
+    "oldPrice": "N/A",
+    "packageSize": "Stück",
+    "unitPrice": "N/A",
+    "discount": "N/A",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Borotalco Produkte",
+    "category": "Household & Personal Care",
+    "currentPrice": "2.29€",
+    "oldPrice": "N/A",
+    "packageSize": "N/A",
+    "unitPrice": "N/A",
+    "discount": "N/A",
+    "availabilityDateRange": "20.10. - 22.10."
+  },
+  {
+    "productName": "Butter Croissant",
+    "category": "Baked Goods",
+    "currentPrice": "0.39€",
+    "oldPrice": "N/A",
+    "packageSize": "Stk.",
+    "unitPrice": "N/A",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Clementinen",
+    "category": "Fruits",
+    "currentPrice": "2.39€",
+    "oldPrice": "3.39€",
+    "packageSize": "1,5 kg",
+    "unitPrice": "1.59/kg",
+    "discount": "29% off",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Paprika rot aus Österreich",
+    "category": "Vegetables",
+    "currentPrice": "0.64€",
+    "oldPrice": "N/A",
+    "packageSize": "Stk.",
+    "unitPrice": "N/A",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Avocados vorgereift",
+    "category": "Fruits",
+    "currentPrice": "0.69€",
+    "oldPrice": "0.99€",
+    "packageSize": "Stück",
+    "unitPrice": "N/A",
+    "discount": "30% off",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Avocados vorgereift",
+    "category": "Fruits",
+    "currentPrice": "0.79€",
+    "oldPrice": "0.99€",
+    "packageSize": "Stück",
+    "unitPrice": "N/A",
+    "discount": "20% off",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Salatherzen",
+    "category": "Vegetables",
+    "currentPrice": "1.00€",
+    "oldPrice": "N/A",
+    "packageSize": "2 Stk.-Pkg.",
+    "unitPrice": "0.50/Stk.",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Birnen aus Österreich",
+    "category": "Fruits",
+    "currentPrice": "1.00€",
+    "oldPrice": "N/A",
+    "packageSize": "500 g",
+    "unitPrice": "2.00/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Fladenbrot",
+    "category": "Baked Goods",
+    "currentPrice": "0.59€",
+    "oldPrice": "0.89€",
+    "packageSize": "Stück",
+    "unitPrice": "N/A",
+    "discount": "34% off",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Topfenkornweckerl",
+    "category": "Baked Goods",
+    "currentPrice": "0.39€",
+    "oldPrice": "N/A",
+    "packageSize": "Stk.",
+    "unitPrice": "N/A",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Krapfen gefüllt",
+    "category": "Baked Goods",
+    "currentPrice": "3.99€",
+    "oldPrice": "N/A",
+    "packageSize": "4x 92 g",
+    "unitPrice": "10.84/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Ciabatta Kalamata Olive",
+    "category": "Baked Goods",
+    "currentPrice": "0.99€",
+    "oldPrice": "N/A",
+    "packageSize": "255 g",
+    "unitPrice": "3.88/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Fisches Hendl im Doppelpack",
+    "category": "Meat & Poultry",
+    "currentPrice": "2.99€",
+    "oldPrice": "N/A",
+    "packageSize": "kg",
+    "unitPrice": "2.99/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Spare Ribs mariniert",
+    "category": "Meat & Poultry",
+    "currentPrice": "5.99€",
+    "oldPrice": "7.79€",
+    "packageSize": "650 g",
+    "unitPrice": "9.22/kg",
+    "discount": "23% off",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Frische Karreesteaks",
+    "category": "Meat & Poultry",
+    "currentPrice": "14.99€",
+    "oldPrice": "N/A",
+    "packageSize": "2 kg",
+    "unitPrice": "7.50/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Entrecote Steak vom Kalb",
+    "category": "Meat & Poultry",
+    "currentPrice": "9.69€",
+    "oldPrice": "N/A",
+    "packageSize": "303 g",
+    "unitPrice": "31.99/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Lachsforellenseite",
+    "category": "Fish & Seafood",
+    "currentPrice": "14.39€",
+    "oldPrice": "N/A",
+    "packageSize": "800 g",
+    "unitPrice": "17.99/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Lachsforellenseite",
+    "category": "Fish & Seafood",
+    "currentPrice": "15.99€",
+    "oldPrice": "N/A",
+    "packageSize": "800 g",
+    "unitPrice": "19.99/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Frisches Faschiertes vom Schwein",
+    "category": "Meat & Poultry",
+    "currentPrice": "2.29€",
+    "oldPrice": "2.79€",
+    "packageSize": "500 g",
+    "unitPrice": "4.58/kg",
+    "discount": "18% off",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Frisches Faschiertes vom Schwein",
+    "category": "Meat & Poultry",
+    "currentPrice": "4.49€",
+    "oldPrice": "5.49€",
+    "packageSize": "1 kg",
+    "unitPrice": "4.49/kg",
+    "discount": "18% off",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Frische Maishendl Unterkeulen",
+    "category": "Meat & Poultry",
+    "currentPrice": "3.99€",
+    "oldPrice": "N/A",
+    "packageSize": "1 kg",
+    "unitPrice": "3.99/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Milchreis",
+    "category": "Dairy & Cheese",
+    "currentPrice": "0.54€",
+    "oldPrice": "N/A",
+    "packageSize": "200 g",
+    "unitPrice": "2.70/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Rolle",
+    "category": "Sweets & Snacks",
+    "currentPrice": "1.49€",
+    "oldPrice": "N/A",
+    "packageSize": "154/157 g",
+    "unitPrice": "9.68/9.49 kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Hühner Nuggets",
+    "category": "Frozen Food",
+    "currentPrice": "3.52€",
+    "oldPrice": "N/A",
+    "packageSize": "250 g",
+    "unitPrice": "14.08/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Pikante Schönbrunner oder Leichte Gemüse Pariser",
+    "category": "Meat & Poultry",
+    "currentPrice": "1.49€",
+    "oldPrice": "2.19€",
+    "packageSize": "150 g",
+    "unitPrice": "9.93/kg",
+    "discount": "32% off",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Puten Kantwurst oder Salami",
+    "category": "Meat & Poultry",
+    "currentPrice": "2.19€",
+    "oldPrice": "N/A",
+    "packageSize": "140 g",
+    "unitPrice": "15.64/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Altwiener Bratstelze im Ganzen",
+    "category": "Meat & Poultry",
+    "currentPrice": "7.49€",
+    "oldPrice": "N/A",
+    "packageSize": "600 g",
+    "unitPrice": "12.48/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Extrawurst",
+    "category": "Meat & Poultry",
+    "currentPrice": "3.99€",
+    "oldPrice": "N/A",
+    "packageSize": "1 kg",
+    "unitPrice": "3.99/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Winterkuchen",
+    "category": "Sweets & Snacks",
+    "currentPrice": "3.99€",
+    "oldPrice": "N/A",
+    "packageSize": "400 g",
+    "unitPrice": "9.98/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Torte",
+    "category": "Sweets & Snacks",
+    "currentPrice": "8.99€",
+    "oldPrice": "N/A",
+    "packageSize": "750 g",
+    "unitPrice": "11.99/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Dreh und Trink",
+    "category": "Beverages (Non-alcoholic)",
+    "currentPrice": "2.76€",
+    "oldPrice": "N/A",
+    "packageSize": "4x 200 ml",
+    "unitPrice": "3.45/l",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Kindergetränk Pepper Pig",
+    "category": "Beverages (Non-alcoholic)",
+    "currentPrice": "5.99€",
+    "oldPrice": "N/A",
+    "packageSize": "8x 350 ml",
+    "unitPrice": "2.14/l",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Regular, Zero, Zero Lemon oder Mirinda",
+    "category": "Beverages (Non-alcoholic)",
+    "currentPrice": "0.99€",
+    "oldPrice": "N/A",
+    "packageSize": "1,5 l",
+    "unitPrice": "0.66/l",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Märzen, Zisch oder Radler Zitrone",
+    "category": "Alcoholic Beverages",
+    "currentPrice": "3.42€",
+    "oldPrice": "N/A",
+    "packageSize": "6x 0,5 l",
+    "unitPrice": "0.57/0,5 l",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "2 Kammer-Joghurt",
+    "category": "Dairy & Cheese",
+    "currentPrice": "3.59€",
+    "oldPrice": "N/A",
+    "packageSize": "6x 120 g",
+    "unitPrice": "4.99/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Fruchtjoghurt",
+    "category": "Dairy & Cheese",
+    "currentPrice": "1.49€",
+    "oldPrice": "N/A",
+    "packageSize": "500 g",
+    "unitPrice": "2.98/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Torten",
+    "category": "Sweets & Snacks",
+    "currentPrice": "5.19€",
+    "oldPrice": "N/A",
+    "packageSize": "400 g",
+    "unitPrice": "12.98/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Crunchy Cookies",
+    "category": "Sweets & Snacks",
+    "currentPrice": "2.99€",
+    "oldPrice": "N/A",
+    "packageSize": "136 g",
+    "unitPrice": "21.99/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Baumstämme oder Tortenecken",
+    "category": "Sweets & Snacks",
+    "currentPrice": "2.99€",
+    "oldPrice": "N/A",
+    "packageSize": "3x 100 g",
+    "unitPrice": "9.97/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Süße Pilze oder Retro Süßigkeiten",
+    "category": "Sweets & Snacks",
+    "currentPrice": "0.99€",
+    "oldPrice": "N/A",
+    "packageSize": "10-125 g",
+    "unitPrice": "99-7.92/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Grüner Veltliner Prestige",
+    "category": "Alcoholic Beverages",
+    "currentPrice": "5.99€",
+    "oldPrice": "6.99€",
+    "packageSize": "0,75 l",
+    "unitPrice": "7.99/l",
+    "discount": "14% off",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Grüner Veltliner Federspiel",
+    "category": "Alcoholic Beverages",
+    "currentPrice": "6.99€",
+    "oldPrice": "N/A",
+    "packageSize": "0,75 l",
+    "unitPrice": "9.32/l",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Riesling Federspiel",
+    "category": "Alcoholic Beverages",
+    "currentPrice": "6.99€",
+    "oldPrice": "N/A",
+    "packageSize": "0,75 l",
+    "unitPrice": "9.32/l",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Käseaufschnitt",
+    "category": "Dairy & Cheese",
+    "currentPrice": "1.49€",
+    "oldPrice": "2.99€",
+    "packageSize": "150 g",
+    "unitPrice": "9.93/kg",
+    "discount": "50% off",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Käseaufschnitt",
+    "category": "Dairy & Cheese",
+    "currentPrice": "1.79€",
+    "oldPrice": "2.99€",
+    "packageSize": "150 g",
+    "unitPrice": "11.93/kg",
+    "discount": "40% off",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Spezialitäten",
+    "category": "Meat & Poultry",
+    "currentPrice": "1.29€",
+    "oldPrice": "1.75€",
+    "packageSize": "100 g",
+    "unitPrice": "12.90/kg",
+    "discount": "26% off",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Brotaufstrich",
+    "category": "Pantry & Condiments",
+    "currentPrice": "1.79€",
+    "oldPrice": "2.59€",
+    "packageSize": "185 g",
+    "unitPrice": "9.68/kg",
+    "discount": "31% off",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Brotaufstrich",
+    "category": "Pantry & Condiments",
+    "currentPrice": "1.89€",
+    "oldPrice": "2.59€",
+    "packageSize": "185 g",
+    "unitPrice": "10.22/kg",
+    "discount": "27% off",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Mühlen Mett",
+    "category": "Meat & Poultry",
+    "currentPrice": "1.79€",
+    "oldPrice": "N/A",
+    "packageSize": "100 g",
+    "unitPrice": "17.90/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Mühlen Mett",
+    "category": "Meat & Poultry",
+    "currentPrice": "1.99€",
+    "oldPrice": "N/A",
+    "packageSize": "100 g",
+    "unitPrice": "19.90/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Teewurst",
+    "category": "Meat & Poultry",
+    "currentPrice": "2.29€",
+    "oldPrice": "N/A",
+    "packageSize": "125 g",
+    "unitPrice": "18.32/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Teewurst",
+    "category": "Meat & Poultry",
+    "currentPrice": "2.39€",
+    "oldPrice": "N/A",
+    "packageSize": "125 g",
+    "unitPrice": "19.12/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Cremespinat",
+    "category": "Frozen Food",
+    "currentPrice": "2.09€",
+    "oldPrice": "3.49€",
+    "packageSize": "600 g",
+    "unitPrice": "3.48/kg",
+    "discount": "40% off",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Flora",
+    "category": "Oils & Fats",
+    "currentPrice": "0.99€",
+    "oldPrice": "N/A",
+    "packageSize": "250 ml",
+    "unitPrice": "3.96/l",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Flora",
+    "category": "Oils & Fats",
+    "currentPrice": "1.19€",
+    "oldPrice": "N/A",
+    "packageSize": "250 ml",
+    "unitPrice": "4.76/l",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Original Irische Butter",
+    "category": "Oils & Fats",
+    "currentPrice": "2.49€",
+    "oldPrice": "N/A",
+    "packageSize": "250 g",
+    "unitPrice": "9.96/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Original Irische Butter",
+    "category": "Oils & Fats",
+    "currentPrice": "2.59€",
+    "oldPrice": "N/A",
+    "packageSize": "250 g",
+    "unitPrice": "10.36/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Balisto oder Bounty 9er",
+    "category": "Sweets & Snacks",
+    "currentPrice": "2.29€",
+    "oldPrice": "3.29€",
+    "packageSize": "166,5/256,5 g",
+    "unitPrice": "13.75/8.93 kg",
+    "discount": "30% off",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Balisto oder Bounty 9er",
+    "category": "Sweets & Snacks",
+    "currentPrice": "2.49€",
+    "oldPrice": "3.29€",
+    "packageSize": "166,5/256,5 g",
+    "unitPrice": "14.95/9.71 kg",
+    "discount": "24% off",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Ketchup",
+    "category": "Pantry & Condiments",
+    "currentPrice": "2.69€",
+    "oldPrice": "3.99€",
+    "packageSize": "960/1000 g",
+    "unitPrice": "2.80/2.69 kg",
+    "discount": "33% off",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Ketchup",
+    "category": "Pantry & Condiments",
+    "currentPrice": "2.99€",
+    "oldPrice": "3.99€",
+    "packageSize": "960/1000 g",
+    "unitPrice": "3.11/2.99 kg",
+    "discount": "25% off",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Meisterkesselsuppen",
+    "category": "Pantry & Condiments",
+    "currentPrice": "2.66€",
+    "oldPrice": "N/A",
+    "packageSize": "500 g",
+    "unitPrice": "5.32/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Kaffee Spezial",
+    "category": "Coffee",
+    "currentPrice": "7.49€",
+    "oldPrice": "14.49€",
+    "packageSize": "500 g",
+    "unitPrice": "14.98/kg",
+    "discount": "48% off",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Kaffee Spezial",
+    "category": "Coffee",
+    "currentPrice": "7.99€",
+    "oldPrice": "14.49€",
+    "packageSize": "500 g",
+    "unitPrice": "15.98/kg",
+    "discount": "45% off",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Märzen",
+    "category": "Alcoholic Beverages",
+    "currentPrice": "0.69€",
+    "oldPrice": "1.15€",
+    "packageSize": "0,33 l",
+    "unitPrice": "1.05/0,5 l",
+    "discount": "40% off",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Märzen",
+    "category": "Alcoholic Beverages",
+    "currentPrice": "0.79€",
+    "oldPrice": "1.15€",
+    "packageSize": "0,33 l",
+    "unitPrice": "1.20/0,5 l",
+    "discount": "31% off",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Fasstyp Märzenbier",
+    "category": "Alcoholic Beverages",
+    "currentPrice": "13.80€",
+    "oldPrice": "24.40€",
+    "packageSize": "20 x 0,5 Liter",
+    "unitPrice": "0.69/0,5 l",
+    "discount": "43% off",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Fasstyp Märzenbier",
+    "category": "Alcoholic Beverages",
+    "currentPrice": "14.80€",
+    "oldPrice": "24.40€",
+    "packageSize": "20 x 0,5 Liter",
+    "unitPrice": "0.74/0,5 l",
+    "discount": "39% off",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Märzen",
+    "category": "Alcoholic Beverages",
+    "currentPrice": "15.80€",
+    "oldPrice": "26.80€",
+    "packageSize": "20 x 0,5 Liter",
+    "unitPrice": "0.79/0,5 l",
+    "discount": "41% off",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Märzen",
+    "category": "Alcoholic Beverages",
+    "currentPrice": "16.40€",
+    "oldPrice": "26.80€",
+    "packageSize": "20 x 0,5 Liter",
+    "unitPrice": "0.82/0,5 l",
+    "discount": "39% off",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Griechisches Tzatziki",
+    "category": "Pantry & Condiments",
+    "currentPrice": "1.29€",
+    "oldPrice": "N/A",
+    "packageSize": "250 g",
+    "unitPrice": "5.16/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Aufstrich",
+    "category": "Pantry & Condiments",
+    "currentPrice": "1.99€",
+    "oldPrice": "N/A",
+    "packageSize": "125 g",
+    "unitPrice": "15.92/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Cremiger Hirtenkäse",
+    "category": "Dairy & Cheese",
+    "currentPrice": "1.99€",
+    "oldPrice": "N/A",
+    "packageSize": "175 g",
+    "unitPrice": "11.37/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Ofen-Feta",
+    "category": "Dairy & Cheese",
+    "currentPrice": "2.99€",
+    "oldPrice": "N/A",
+    "packageSize": "110 g",
+    "unitPrice": "27.18/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Griechischer Feta g.U.",
+    "category": "Dairy & Cheese",
+    "currentPrice": "4.99€",
+    "oldPrice": "N/A",
+    "packageSize": "400 g",
+    "unitPrice": "12.48/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Sesam-Oregano Käsetaschen",
+    "category": "Baked Goods",
+    "currentPrice": "3.99€",
+    "oldPrice": "N/A",
+    "packageSize": "1 kg",
+    "unitPrice": "3.99/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Party-Bällchen",
+    "category": "Pantry & Condiments",
+    "currentPrice": "2.99€",
+    "oldPrice": "N/A",
+    "packageSize": "280 g",
+    "unitPrice": "10.68/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Bauernpita mit Faschiertem",
+    "category": "Baked Goods",
+    "currentPrice": "5.99€",
+    "oldPrice": "N/A",
+    "packageSize": "850 g",
+    "unitPrice": "7.05/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Moussaka oder Griechischer Nudelauflauf",
+    "category": "Pantry & Condiments",
+    "currentPrice": "2.99€",
+    "oldPrice": "N/A",
+    "packageSize": "380 g",
+    "unitPrice": "7.87/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Griechischer Naturjoghurt",
+    "category": "Dairy & Cheese",
+    "currentPrice": "3.39€",
+    "oldPrice": "N/A",
+    "packageSize": "1 kg",
+    "unitPrice": "3.39/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Antipasti Mix",
+    "category": "Pantry & Condiments",
+    "currentPrice": "2.99€",
+    "oldPrice": "N/A",
+    "packageSize": "250/300 g",
+    "unitPrice": "11.96/9.97 kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Antipasti in Öl",
+    "category": "Pantry & Condiments",
+    "currentPrice": "2.29€",
+    "oldPrice": "N/A",
+    "packageSize": "230/250 g",
+    "unitPrice": "9.96/9.16 kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Halloumi g.U.",
+    "category": "Dairy & Cheese",
+    "currentPrice": "2.59€",
+    "oldPrice": "3.15€",
+    "packageSize": "225 g",
+    "unitPrice": "11.51/kg",
+    "discount": "18% off",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Griechischer Oliven Mix",
+    "category": "Pantry & Condiments",
+    "currentPrice": "3.99€",
+    "oldPrice": "N/A",
+    "packageSize": "400 g",
+    "unitPrice": "9.98/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Käse-Olivenschnecken",
+    "category": "Baked Goods",
+    "currentPrice": "2.49€",
+    "oldPrice": "N/A",
+    "packageSize": "4x 120 g",
+    "unitPrice": "5.19/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Pfannengerichte nach griechischer Art",
+    "category": "Pantry & Condiments",
+    "currentPrice": "3.49€",
+    "oldPrice": "N/A",
+    "packageSize": "600 g",
+    "unitPrice": "5.82/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Käseschnecke",
+    "category": "Baked Goods",
+    "currentPrice": "4.49€",
+    "oldPrice": "N/A",
+    "packageSize": "1 kg",
+    "unitPrice": "4.49/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Kalmar",
+    "category": "Fish & Seafood",
+    "currentPrice": "6.99€",
+    "oldPrice": "N/A",
+    "packageSize": "630 g",
+    "unitPrice": "11.10/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Octopus-Tentakel",
+    "category": "Fish & Seafood",
+    "currentPrice": "13.99€",
+    "oldPrice": "N/A",
+    "packageSize": "540 g",
+    "unitPrice": "25.91/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Gyros-Pfanne",
+    "category": "Meat & Poultry",
+    "currentPrice": "4.49€",
+    "oldPrice": "N/A",
+    "packageSize": "500 g",
+    "unitPrice": "8.98/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Bifteki",
+    "category": "Meat & Poultry",
+    "currentPrice": "7.99€",
+    "oldPrice": "N/A",
+    "packageSize": "750 g",
+    "unitPrice": "10.65/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Grüne Oliven entsteint",
+    "category": "Pantry & Condiments",
+    "currentPrice": "5.99€",
+    "oldPrice": "N/A",
+    "packageSize": "1,7 l",
+    "unitPrice": "7.05/kg Abtr. G.",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Grüne Oliven gefüllt",
+    "category": "Pantry & Condiments",
+    "currentPrice": "1.69€",
+    "oldPrice": "N/A",
+    "packageSize": "370 ml",
+    "unitPrice": "8.45/kg Abtr. G.",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Natives Olivenöl extra aus Kreta",
+    "category": "Oils & Fats",
+    "currentPrice": "27.99€",
+    "oldPrice": "N/A",
+    "packageSize": "3 l",
+    "unitPrice": "9.33/l",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Gefüllte Antipasti",
+    "category": "Pantry & Condiments",
+    "currentPrice": "2.49€",
+    "oldPrice": "N/A",
+    "packageSize": "270 g",
+    "unitPrice": "16.60/kg Abtr. G.",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Gewürzzubereitung",
+    "category": "Pantry & Condiments",
+    "currentPrice": "0.79€",
+    "oldPrice": "N/A",
+    "packageSize": "35-50 g",
+    "unitPrice": "22.57-15.80/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Griechisches natives Olivenöl extra g.U.",
+    "category": "Oils & Fats",
+    "currentPrice": "9.99€",
+    "oldPrice": "N/A",
+    "packageSize": "1 l",
+    "unitPrice": "9.99/l",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Greek Style Joghurt",
+    "category": "Dairy & Cheese",
+    "currentPrice": "0.99€",
+    "oldPrice": "N/A",
+    "packageSize": "175 g",
+    "unitPrice": "5.66/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Fertiggericht",
+    "category": "Pantry & Condiments",
+    "currentPrice": "1.99€",
+    "oldPrice": "N/A",
+    "packageSize": "280 g",
+    "unitPrice": "7.11/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Geräucherter Thunfisch",
+    "category": "Fish & Seafood",
+    "currentPrice": "1.99€",
+    "oldPrice": "N/A",
+    "packageSize": "160 g",
+    "unitPrice": "12.44/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Marillenkekse",
+    "category": "Sweets & Snacks",
+    "currentPrice": "2.49€",
+    "oldPrice": "N/A",
+    "packageSize": "330 g",
+    "unitPrice": "7.55/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Karamellisierte Nüsse",
+    "category": "Sweets & Snacks",
+    "currentPrice": "1.59€",
+    "oldPrice": "N/A",
+    "packageSize": "120/150 g",
+    "unitPrice": "13.25/10.60 kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Chips",
+    "category": "Sweets & Snacks",
+    "currentPrice": "1.59€",
+    "oldPrice": "N/A",
+    "packageSize": "200 g",
+    "unitPrice": "7.95/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Kürbiskerne",
+    "category": "Vegetables",
+    "currentPrice": "1.79€",
+    "oldPrice": "N/A",
+    "packageSize": "200 g",
+    "unitPrice": "8.95/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Sesamriegel oder Softnougat Riegel mit Mandel",
+    "category": "Sweets & Snacks",
+    "currentPrice": "0.49€",
+    "oldPrice": "N/A",
+    "packageSize": "60/70 g",
+    "unitPrice": "8.17/7.00 kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Sesamriegel oder Softnougat Riegel mit Mandel",
+    "category": "Sweets & Snacks",
+    "currentPrice": "0.79€",
+    "oldPrice": "N/A",
+    "packageSize": "60/70 g",
+    "unitPrice": "13.17/11.29 kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Mini Riegel",
+    "category": "Sweets & Snacks",
+    "currentPrice": "2.49€",
+    "oldPrice": "N/A",
+    "packageSize": "200 g",
+    "unitPrice": "12.45/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Bier",
+    "category": "Alcoholic Beverages",
+    "currentPrice": "0.79€",
+    "oldPrice": "N/A",
+    "packageSize": "0,33 l",
+    "unitPrice": "1.20/0,5 l",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Mavrodaphne P.O.P. Patras",
+    "category": "Alcoholic Beverages",
+    "currentPrice": "3.99€",
+    "oldPrice": "N/A",
+    "packageSize": "0,75 l",
+    "unitPrice": "5.32/l",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Ouzo",
+    "category": "Alcoholic Beverages",
+    "currentPrice": "6.99€",
+    "oldPrice": "8.99€",
+    "packageSize": "0,7 l",
+    "unitPrice": "9.99/l",
+    "discount": "22% off",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Sekt",
+    "category": "Alcoholic Beverages",
+    "currentPrice": "1.32€",
+    "oldPrice": "N/A",
+    "packageSize": "0,75 l",
+    "unitPrice": "1.76/l",
+    "discount": "N/A",
+    "availabilityDateRange": "von 23.10. - 25.10."
+  },
+  {
+    "productName": "Bananen",
+    "category": "Fruits",
+    "currentPrice": "0.99€",
+    "oldPrice": "1.79€",
+    "packageSize": "kg",
+    "unitPrice": "0.99/kg",
+    "discount": "45% off",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Bananen",
+    "category": "Fruits",
+    "currentPrice": "1.11€",
+    "oldPrice": "1.79€",
+    "packageSize": "kg",
+    "unitPrice": "1.11/kg",
+    "discount": "38% off",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Kohlsprossen",
+    "category": "Vegetables",
+    "currentPrice": "0.99€",
+    "oldPrice": "1.49€",
+    "packageSize": "500 g",
+    "unitPrice": "1.98/kg",
+    "discount": "34% off",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Cherrystrauchtomaten aus Österreich",
+    "category": "Vegetables",
+    "currentPrice": "2.29€",
+    "oldPrice": "2.99€",
+    "packageSize": "300 g",
+    "unitPrice": "7.63/kg",
+    "discount": "23% off",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Grapefruit",
+    "category": "Fruits",
+    "currentPrice": "0.44€",
+    "oldPrice": "N/A",
+    "packageSize": "Stk.",
+    "unitPrice": "N/A",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Halloween Donut",
+    "category": "Baked Goods",
+    "currentPrice": "0.69€",
+    "oldPrice": "N/A",
+    "packageSize": "Stück",
+    "unitPrice": "N/A",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Krustenlaib",
+    "category": "Baked Goods",
+    "currentPrice": "1.29€",
+    "oldPrice": "N/A",
+    "packageSize": "500 g",
+    "unitPrice": "2.58/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Krustenlaib",
+    "category": "Baked Goods",
+    "currentPrice": "1.89€",
+    "oldPrice": "N/A",
+    "packageSize": "500 g",
+    "unitPrice": "3.78/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Kürbiskernweckerl",
+    "category": "Baked Goods",
+    "currentPrice": "0.46€",
+    "oldPrice": "N/A",
+    "packageSize": "Stk.",
+    "unitPrice": "N/A",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Frische Maishendl Leber",
+    "category": "Meat & Poultry",
+    "currentPrice": "2.49€",
+    "oldPrice": "3.69€",
+    "packageSize": "370 g",
+    "unitPrice": "6.73/kg",
+    "discount": "32% off",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Frischer Puten Rollbraten",
+    "category": "Meat & Poultry",
+    "currentPrice": "6.39€",
+    "oldPrice": "N/A",
+    "packageSize": "1 kg",
+    "unitPrice": "6.39/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Frischer Schopfbraten",
+    "category": "Meat & Poultry",
+    "currentPrice": "7.99€",
+    "oldPrice": "N/A",
+    "packageSize": "1,2 kg",
+    "unitPrice": "6.66/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Frisches Rindsgulaschfleisch",
+    "category": "Meat & Poultry",
+    "currentPrice": "11.99€",
+    "oldPrice": "N/A",
+    "packageSize": "1 kg",
+    "unitPrice": "11.99/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Frischer Ofenlachs mariniert",
+    "category": "Fish & Seafood",
+    "currentPrice": "4.99€",
+    "oldPrice": "5.99€",
+    "packageSize": "250 g",
+    "unitPrice": "19.96/kg",
+    "discount": "17% off",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "XXL Toastschinken",
+    "category": "Meat & Poultry",
+    "currentPrice": "2.79€",
+    "oldPrice": "N/A",
+    "packageSize": "300 g",
+    "unitPrice": "9.30/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "XXL Berner Würstel",
+    "category": "Meat & Poultry",
+    "currentPrice": "4.49€",
+    "oldPrice": "N/A",
+    "packageSize": "600 g",
+    "unitPrice": "7.48/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Puten Aufschnitt",
+    "category": "Meat & Poultry",
+    "currentPrice": "3.49€",
+    "oldPrice": "N/A",
+    "packageSize": "300 g",
+    "unitPrice": "11.63/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Kaiserfleisch",
+    "category": "Meat & Poultry",
+    "currentPrice": "7.99€",
+    "oldPrice": "N/A",
+    "packageSize": "600 g",
+    "unitPrice": "13.32/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Schmelzkäsescheiben",
+    "category": "Dairy & Cheese",
+    "currentPrice": "1.79€",
+    "oldPrice": "2.19€",
+    "packageSize": "250 g",
+    "unitPrice": "7.16/kg",
+    "discount": "18% off",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Sirius Camembert",
+    "category": "Dairy & Cheese",
+    "currentPrice": "2.99€",
+    "oldPrice": "N/A",
+    "packageSize": "300 g",
+    "unitPrice": "9.97/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Landbaron in Scheiben",
+    "category": "Dairy & Cheese",
+    "currentPrice": "7.29€",
+    "oldPrice": "N/A",
+    "packageSize": "800 g",
+    "unitPrice": "9.11/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Cabanossi",
+    "category": "Meat & Poultry",
+    "currentPrice": "2.79€",
+    "oldPrice": "3.49€",
+    "packageSize": "300 g",
+    "unitPrice": "9.30/kg",
+    "discount": "20% off",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Frischer Blätterteig",
+    "category": "Baked Goods",
+    "currentPrice": "0.79€",
+    "oldPrice": "0.99€",
+    "packageSize": "275 g",
+    "unitPrice": "2.87/kg",
+    "discount": "20% off",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Müllermilch",
+    "category": "Beverages (Non-alcoholic)",
+    "currentPrice": "0.99€",
+    "oldPrice": "N/A",
+    "packageSize": "400 ml",
+    "unitPrice": "2.48/l",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Café to Go",
+    "category": "Beverages (Non-alcoholic)",
+    "currentPrice": "0.89€",
+    "oldPrice": "N/A",
+    "packageSize": "250 ml",
+    "unitPrice": "3.56/l",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Knusperjoghurt 2 Kammern",
+    "category": "Dairy & Cheese",
+    "currentPrice": "0.46€",
+    "oldPrice": "N/A",
+    "packageSize": "175 g",
+    "unitPrice": "2.63/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Naturjoghurt",
+    "category": "Dairy & Cheese",
+    "currentPrice": "0.99€",
+    "oldPrice": "1.19€",
+    "packageSize": "4x 150 g",
+    "unitPrice": "1.65/kg",
+    "discount": "17% off",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Bergkäse",
+    "category": "Dairy & Cheese",
+    "currentPrice": "8.99€",
+    "oldPrice": "N/A",
+    "packageSize": "600 g",
+    "unitPrice": "14.98/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Ofenkäse",
+    "category": "Dairy & Cheese",
+    "currentPrice": "4.99€",
+    "oldPrice": "N/A",
+    "packageSize": "320 g",
+    "unitPrice": "15.59/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Kefir natur",
+    "category": "Dairy & Cheese",
+    "currentPrice": "0.79€",
+    "oldPrice": "0.99€",
+    "packageSize": "500 g",
+    "unitPrice": "1.58/kg",
+    "discount": "20% off",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Steinofen Flammkuchen/Pizza",
+    "category": "Frozen Food",
+    "currentPrice": "4.99€",
+    "oldPrice": "N/A",
+    "packageSize": "600/700 g",
+    "unitPrice": "8.32/7.13 kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Bio Eier",
+    "category": "Eggs",
+    "currentPrice": "4.49€",
+    "oldPrice": "N/A",
+    "packageSize": "12 Stück",
+    "unitPrice": "0.37/Stk.",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Kaffee Gold im Geschenk-set",
+    "category": "Coffee",
+    "currentPrice": "6.99€",
+    "oldPrice": "N/A",
+    "packageSize": "500 g",
+    "unitPrice": "13.98/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Classic",
+    "category": "Coffee",
+    "currentPrice": "6.99€",
+    "oldPrice": "13.49€",
+    "packageSize": "200 g",
+    "unitPrice": "34.95/kg",
+    "discount": "48% off",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Birnen in Traubensaft",
+    "category": "Pantry & Condiments",
+    "currentPrice": "1.66€",
+    "oldPrice": "N/A",
+    "packageSize": "850 ml",
+    "unitPrice": "1.95/l",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Milch Kakao",
+    "category": "Beverages (Non-alcoholic)",
+    "currentPrice": "0.99€",
+    "oldPrice": "N/A",
+    "packageSize": "3x 200 ml",
+    "unitPrice": "1.65/l",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Landbrot 100% Dinkel",
+    "category": "Baked Goods",
+    "currentPrice": "3.19€",
+    "oldPrice": "3.99€",
+    "packageSize": "450 g",
+    "unitPrice": "7.09/kg",
+    "discount": "20% off",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Bio Natives Olivenöl Extra",
+    "category": "Oils & Fats",
+    "currentPrice": "8.29€",
+    "oldPrice": "9.95€",
+    "packageSize": "0,75 Liter",
+    "unitPrice": "11.05/l",
+    "discount": "17% off",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Bueno",
+    "category": "Sweets & Snacks",
+    "currentPrice": "1.99€",
+    "oldPrice": "N/A",
+    "packageSize": "117/129 g",
+    "unitPrice": "17.01/15.43 kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Duplo, Riegel oder Country",
+    "category": "Sweets & Snacks",
+    "currentPrice": "2.89€",
+    "oldPrice": "N/A",
+    "packageSize": "182-211,5 g",
+    "unitPrice": "15.88-13.66/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Apfelsaft gespritzt oder Leichter Apfel",
+    "category": "Beverages (Non-alcoholic)",
+    "currentPrice": "0.36€",
+    "oldPrice": "N/A",
+    "packageSize": "0,5 l",
+    "unitPrice": "0.72/l",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Mineralwasser",
+    "category": "Beverages (Non-alcoholic)",
+    "currentPrice": "0.32€",
+    "oldPrice": "N/A",
+    "packageSize": "1,5 l",
+    "unitPrice": "0.21/l",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Giotto",
+    "category": "Sweets & Snacks",
+    "currentPrice": "3.19€",
+    "oldPrice": "N/A",
+    "packageSize": "154 g",
+    "unitPrice": "20.71/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Limonade",
+    "category": "Beverages (Non-alcoholic)",
+    "currentPrice": "0.99€",
+    "oldPrice": "N/A",
+    "packageSize": "1 l",
+    "unitPrice": "0.99/l",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Limonade",
+    "category": "Beverages (Non-alcoholic)",
+    "currentPrice": "0.69€",
+    "oldPrice": "N/A",
+    "packageSize": "0,5 l",
+    "unitPrice": "1.38/l",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Thunfischfilets",
+    "category": "Fish & Seafood",
+    "currentPrice": "5.99€",
+    "oldPrice": "N/A",
+    "packageSize": "4x 185 g",
+    "unitPrice": "8.09/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Cola, Zero oder Fanta",
+    "category": "Beverages (Non-alcoholic)",
+    "currentPrice": "4.72€",
+    "oldPrice": "N/A",
+    "packageSize": "8x 0,33 l",
+    "unitPrice": "1.79/l",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Cola, Zero oder Fanta",
+    "category": "Beverages (Non-alcoholic)",
+    "currentPrice": "5.20€",
+    "oldPrice": "N/A",
+    "packageSize": "8x 0,33 l",
+    "unitPrice": "1.97/l",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Activia",
+    "category": "Dairy & Cheese",
+    "currentPrice": "3.49€",
+    "oldPrice": "N/A",
+    "packageSize": "8x 115 g",
+    "unitPrice": "3.79/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Activia",
+    "category": "Dairy & Cheese",
+    "currentPrice": "3.69€",
+    "oldPrice": "N/A",
+    "packageSize": "8x 115 g",
+    "unitPrice": "4.01/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Premium King Prawns",
+    "category": "Fish & Seafood",
+    "currentPrice": "7.99€",
+    "oldPrice": "9.99€",
+    "packageSize": "450 g",
+    "unitPrice": "17.76/kg",
+    "discount": "20% off",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Braunschweiger",
+    "category": "Meat & Poultry",
+    "currentPrice": "2.79€",
+    "oldPrice": "3.69€",
+    "packageSize": "500 g",
+    "unitPrice": "5.58/kg",
+    "discount": "24% off",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Streichkäse",
+    "category": "Dairy & Cheese",
+    "currentPrice": "1.99€",
+    "oldPrice": "N/A",
+    "packageSize": "175 g",
+    "unitPrice": "11.37/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  },
+  {
+    "productName": "Streichkäse",
+    "category": "Dairy & Cheese",
+    "currentPrice": "2.19€",
+    "oldPrice": "N/A",
+    "packageSize": "175 g",
+    "unitPrice": "12.51/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "von 27.10. - 29.10."
+  }
+]

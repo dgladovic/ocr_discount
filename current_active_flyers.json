@@ -1,0 +1,26 @@
+[
+  {
+    "Title": "Blättern Sie online im HOFER Flugblatt",
+    "Retailer": "HOFER",
+    "PDF_URL": "https://s7g10.scene7.com/is/content/aldi/flipbook_kw44_25_0",
+    "Duration": "Angebote gültig ab Freitag, 24.10., Montag 27.10. bis Donnerstag, 30.10.2025",
+    "StartDate": "2025-10-24",
+    "EndDate": "2025-10-30"
+  },
+  {
+    "Title": "BILLA Flugblatt",
+    "Retailer": "BILLA",
+    "PDF_URL": "https://assets-eu-01.kc-usercontent.com/cc0b17b0-a734-010a-8710-f644b7ee1f24/81bbe878-f94f-4755-bf24-de27a80cf874/BILLA_FB_KW43_2025_Wien.pdf",
+    "Duration": "VON DONNERSTAG, 23.10. BIS MITTWOCH, 29.10.2025",
+    "StartDate": "2025-10-23",
+    "EndDate": "2025-10-29"
+  },
+  {
+    "Title": "BILLA PLUS Flugblatt",
+    "Retailer": "BILLA",
+    "PDF_URL": "https://assets-eu-01.kc-usercontent.com/cc0b17b0-a734-010a-8710-f644b7ee1f24/b8e228af-21cf-45e5-812e-2e28132c6e81/BILLA_PLUS_FB_KW43_2025_Wien.pdf",
+    "Duration": "VON DONNERSTAG, 23.10. BIS MITTWOCH, 29.10.2025",
+    "StartDate": "2025-10-23",
+    "EndDate": "2025-10-29"
+  }
+]

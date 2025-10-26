@@ -1,0 +1,1242 @@
+[
+  {
+    "productName": "Dülli Dungl Tee",
+    "category": "Tea",
+    "currentPrice": "3.49€",
+    "oldPrice": "4.79€",
+    "packageSize": "20 Teebeutel",
+    "unitPrice": "N/A",
+    "discount": "-25% BILLIGER",
+    "availabilityDateRange": "17.10. - 18.10.2025"
+  },
+  {
+    "productName": "Wieselburger Gold Beer",
+    "category": "Beer",
+    "currentPrice": "13.80€",
+    "oldPrice": "25.50€",
+    "packageSize": "20x0.5 Liter",
+    "unitPrice": "1.38€/L",
+    "discount": "-25% BILLIGER",
+    "availabilityDateRange": "17.10. - 18.10.2025"
+  },
+  {
+    "productName": "Hofstädter Bratenschinken",
+    "category": "Meat & Poultry",
+    "currentPrice": "7.49€",
+    "oldPrice": "14.99€",
+    "packageSize": "ca. 1.1 Kilo Stück",
+    "unitPrice": "7.49€/kg",
+    "discount": "-25% BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Jacobs Caffé Crema div. Sorten",
+    "category": "Coffee",
+    "currentPrice": "14.99€",
+    "oldPrice": "26.99€",
+    "packageSize": "1 Kilo Packung",
+    "unitPrice": "14.99€/kg",
+    "discount": "-25% BILLIGER",
+    "availabilityDateRange": "17.10. - 18.10.2025"
+  },
+  {
+    "productName": "Jacobs Nespresso kompatible Aluminiumkapseln div. Sorten",
+    "category": "Coffee Capsules",
+    "currentPrice": "4.49€",
+    "oldPrice": "7.69€",
+    "packageSize": "20 Portionen, 104 g Packung",
+    "unitPrice": "43.17€/kg",
+    "discount": "-25% BILLIGER",
+    "availabilityDateRange": "17.10. - 18.10.2025"
+  },
+  {
+    "productName": "Dallmayr Classic div. Sorten",
+    "category": "Coffee",
+    "currentPrice": "6.74€",
+    "oldPrice": "13.29€",
+    "packageSize": "500 g Packung",
+    "unitPrice": "13.48€/kg",
+    "discount": "-25% BILLIGER",
+    "availabilityDateRange": "17.10. - 18.10.2025"
+  },
+  {
+    "productName": "Dallmayr Home Barista Caffe Crema Dolce",
+    "category": "Coffee",
+    "currentPrice": "11.99€",
+    "oldPrice": "21.99€",
+    "packageSize": "1 Kilo Packung",
+    "unitPrice": "11.99€/kg",
+    "discount": "-25% BILLIGER",
+    "availabilityDateRange": "17.10. - 18.10.2025"
+  },
+  {
+    "productName": "Lavazza Caffé Espresso Italiano Cremoso",
+    "category": "Coffee",
+    "currentPrice": "14.99€",
+    "oldPrice": "27.99€",
+    "packageSize": "1 Kilo Packung",
+    "unitPrice": "14.99€/kg",
+    "discount": "-25% BILLIGER",
+    "availabilityDateRange": "17.10. - 18.10.2025"
+  },
+  {
+    "productName": "Julius Meinl Espressokapseln Jubiläum div. Sorten",
+    "category": "Coffee Capsules",
+    "currentPrice": "2.50€",
+    "oldPrice": "4.29€",
+    "packageSize": "10 Portionen, 56 g",
+    "unitPrice": "44.64€/kg",
+    "discount": "+1 GRATIS",
+    "availabilityDateRange": "17.10. - 18.10.2025"
+  },
+  {
+    "productName": "Yogi-Tee div. Sorten",
+    "category": "Tea",
+    "currentPrice": "2.24€",
+    "oldPrice": "3.69€",
+    "packageSize": "17 Teebeutel",
+    "unitPrice": "N/A",
+    "discount": "-25% BILLIGER",
+    "availabilityDateRange": "17.10. - 18.10.2025"
+  },
+  {
+    "productName": "Schwechater Bier Märzen",
+    "category": "Beer",
+    "currentPrice": "0.59€",
+    "oldPrice": "1.33€",
+    "packageSize": "0.5 Liter",
+    "unitPrice": "1.18€/L",
+    "discount": "-25% BILLIGER",
+    "availabilityDateRange": "17.10. - 18.10.2025"
+  },
+  {
+    "productName": "Wieselburger Export",
+    "category": "Beer",
+    "currentPrice": "0.69€",
+    "oldPrice": "1.46€",
+    "packageSize": "0.5 Liter",
+    "unitPrice": "1.38€/L",
+    "discount": "-25% BILLIGER",
+    "availabilityDateRange": "17.10. - 18.10.2025"
+  },
+  {
+    "productName": "Zwettler Export Lager",
+    "category": "Beer",
+    "currentPrice": "13.80€",
+    "oldPrice": "23.60€",
+    "packageSize": "1 Kiste = 20 Flaschen (0.5 L)",
+    "unitPrice": "1.38€/L",
+    "discount": "-25% BILLIGER",
+    "availabilityDateRange": "17.10. - 18.10.2025"
+  },
+  {
+    "productName": "Egger Bier div. Sorten",
+    "category": "Beer",
+    "currentPrice": "0.49€",
+    "oldPrice": "1.15€",
+    "packageSize": "0.5 Liter",
+    "unitPrice": "0.98€/L",
+    "discount": "-25% BILLIGER",
+    "availabilityDateRange": "17.10. - 18.10.2025"
+  },
+  {
+    "productName": "Hofstädter Bauchspeck",
+    "category": "Meat & Poultry",
+    "currentPrice": "1.49€",
+    "oldPrice": "2.99€",
+    "packageSize": "per 100 g",
+    "unitPrice": "14.90€/kg",
+    "discount": "-25% BILLIGER",
+    "availabilityDateRange": "17.10. - 18.10.2025"
+  },
+  {
+    "productName": "Hofstädter Bauernschinken geschnitten",
+    "category": "Meat & Poultry",
+    "currentPrice": "1.49€",
+    "oldPrice": "2.99€",
+    "packageSize": "per 100 g",
+    "unitPrice": "14.90€/kg",
+    "discount": "-25% BILLIGER",
+    "availabilityDateRange": "17.10. - 18.10.2025"
+  },
+  {
+    "productName": "Hofstädter Suppenmix",
+    "category": "Meat & Poultry",
+    "currentPrice": "14.99€",
+    "oldPrice": "22.99€",
+    "packageSize": "per Kilo",
+    "unitPrice": "14.99€/kg",
+    "discount": "-25% BILLIGER",
+    "availabilityDateRange": "17.10. - 18.10.2025"
+  },
+  {
+    "productName": "Hofstädter Karree vom Strohschwein",
+    "category": "Meat & Poultry",
+    "currentPrice": "8.24€",
+    "oldPrice": "13.99€",
+    "packageSize": "im Ganzen, Knochen, mit Schwarte, per Kilo",
+    "unitPrice": "8.24€/kg",
+    "discount": "-25% BILLIGER",
+    "availabilityDateRange": "17.10. - 18.10.2025"
+  },
+  {
+    "productName": "Hofstädter Schinken- od. Karreerück",
+    "category": "Meat & Poultry",
+    "currentPrice": "1.99€",
+    "oldPrice": "3.19€",
+    "packageSize": "geschnitten, 100 g Packung",
+    "unitPrice": "19.90€/kg",
+    "discount": "-25% BILLIGER",
+    "availabilityDateRange": "17.10. - 18.10.2025"
+  },
+  {
+    "productName": "Berger Erdbeeren",
+    "category": "Fruits",
+    "currentPrice": "2.49€",
+    "oldPrice": "2.99€",
+    "packageSize": "500 g Packung",
+    "unitPrice": "9.96€/kg",
+    "discount": "-0.50€ BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Berger Puten Schinken",
+    "category": "Meat & Poultry",
+    "currentPrice": "3.99€",
+    "oldPrice": "N/A",
+    "packageSize": "1 kg Packung",
+    "unitPrice": "3.99€/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Berger Tierwohl Kochschinken",
+    "category": "Meat & Poultry",
+    "currentPrice": "1.79€",
+    "oldPrice": "2.29€",
+    "packageSize": "per 100 g",
+    "unitPrice": "17.90€/kg",
+    "discount": "-0.50€ BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Gusteria Gouda Scheiben",
+    "category": "Dairy",
+    "currentPrice": "8.99€",
+    "oldPrice": "N/A",
+    "packageSize": "1 Kilo Packung",
+    "unitPrice": "8.99€/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Formil Heumilch 1.5%",
+    "category": "Dairy",
+    "currentPrice": "0.99€",
+    "oldPrice": "1.69€",
+    "packageSize": "1 Liter",
+    "unitPrice": "0.99€/L",
+    "discount": "-41% BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Zott Sahnejoghurt Fruchtgenuss Joy div. Sorten",
+    "category": "Dairy",
+    "currentPrice": "0.47€",
+    "oldPrice": "0.95€",
+    "packageSize": "150 g Becher",
+    "unitPrice": "3.13€/kg",
+    "discount": "2+2 GRATIS",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Laugenfußball",
+    "category": "Baked Goods",
+    "currentPrice": "0.49€",
+    "oldPrice": "0.99€",
+    "packageSize": "per Stück",
+    "unitPrice": "N/A",
+    "discount": "2+2 GRATIS",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Milchbrötle mit Schokolade",
+    "category": "Baked Goods",
+    "currentPrice": "2.69€",
+    "oldPrice": "3.69€",
+    "packageSize": "240 g",
+    "unitPrice": "11.21€/kg",
+    "discount": "-27% BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Iglo Knödel div. Sorten",
+    "category": "Frozen Food",
+    "currentPrice": "2.99€",
+    "oldPrice": "6.79€",
+    "packageSize": "530 g Packung",
+    "unitPrice": "2.97€/kg",
+    "discount": "-55% BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Iliada natives Olivenöl extra",
+    "category": "Oils & Vinegars",
+    "currentPrice": "5.99€",
+    "oldPrice": "9.99€",
+    "packageSize": "0.5 Liter Flasche",
+    "unitPrice": "11.98€/L",
+    "discount": "-40% BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Kelly's Käse Snips div. Sorten",
+    "category": "Snacks",
+    "currentPrice": "1.49€",
+    "oldPrice": "2.99€",
+    "packageSize": "130 g - 150 g",
+    "unitPrice": "N/A",
+    "discount": "1+1 GRATIS",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Coca-Cola Limonaden div. Sorten",
+    "category": "Beverages",
+    "currentPrice": "0.62€",
+    "oldPrice": "1.35€",
+    "packageSize": "0.5 Liter Flasche",
+    "unitPrice": "1.24€/L",
+    "discount": "-54% BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Prickler Ried Sonnberg Morgengold DAC 2024",
+    "category": "Wine",
+    "currentPrice": "5.99€",
+    "oldPrice": "11.99€",
+    "packageSize": "0.75 Liter",
+    "unitPrice": "7.99€/L",
+    "discount": "1+1 GRATIS",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Plenty Küchenrolle div. Sorten",
+    "category": "Household",
+    "currentPrice": "10.99€",
+    "oldPrice": "N/A",
+    "packageSize": "16 Rollen",
+    "unitPrice": "N/A",
+    "discount": "N/A",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Fanta div. Sorten",
+    "category": "Beverages",
+    "currentPrice": "1.39€",
+    "oldPrice": "1.69€",
+    "packageSize": "0.5 Liter",
+    "unitPrice": "2.78€/L",
+    "discount": "-0.50€ BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Radatz Halloween-Wurst",
+    "category": "Meat & Poultry",
+    "currentPrice": "1.99€",
+    "oldPrice": "N/A",
+    "packageSize": "150 g Packung",
+    "unitPrice": "13.27€/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Halloween-Leberkäse-Burger",
+    "category": "Meat & Poultry",
+    "currentPrice": "1.99€",
+    "oldPrice": "N/A",
+    "packageSize": "per Stück",
+    "unitPrice": "N/A",
+    "discount": "N/A",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Rana Halloween Kürbis Ravioli",
+    "category": "Pasta",
+    "currentPrice": "2.99€",
+    "oldPrice": "3.69€",
+    "packageSize": "250 g",
+    "unitPrice": "11.96€/kg",
+    "discount": "-1.40€ BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Sweezels Mummy Mix Bag",
+    "category": "Sweets & Chocolate",
+    "currentPrice": "3.99€",
+    "oldPrice": "N/A",
+    "packageSize": "330 g - 340 g Packung",
+    "unitPrice": "N/A",
+    "discount": "N/A",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "PEZ Halloween Lolly 8 Stk.",
+    "category": "Sweets & Chocolate",
+    "currentPrice": "1.99€",
+    "oldPrice": "N/A",
+    "packageSize": "128 g Packung",
+    "unitPrice": "1.56€/100g",
+    "discount": "N/A",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Haribo Halloween div. Sorten",
+    "category": "Sweets & Chocolate",
+    "currentPrice": "1.29€",
+    "oldPrice": "N/A",
+    "packageSize": "100 g - 175 g Packung",
+    "unitPrice": "N/A",
+    "discount": "N/A",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Küchle Zungentattoos Halloween",
+    "category": "Sweets & Chocolate",
+    "currentPrice": "1.29€",
+    "oldPrice": "N/A",
+    "packageSize": "11 g Packung",
+    "unitPrice": "11.73€/100g",
+    "discount": "N/A",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Mars Mixed Minis",
+    "category": "Sweets & Chocolate",
+    "currentPrice": "5.49€",
+    "oldPrice": "5.99€",
+    "packageSize": "400 g Packung",
+    "unitPrice": "1.37€/100g",
+    "discount": "-0.50€ BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "PEZ Halloween-Maxi-Mix",
+    "category": "Sweets & Chocolate",
+    "currentPrice": "4.99€",
+    "oldPrice": "N/A",
+    "packageSize": "183.5 g Packung",
+    "unitPrice": "2.72€/100g",
+    "discount": "N/A",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Halloween Kürbis gefüllt mit Sweets",
+    "category": "Sweets & Chocolate",
+    "currentPrice": "4.99€",
+    "oldPrice": "N/A",
+    "packageSize": "200 g Kübel",
+    "unitPrice": "2.50€/100g",
+    "discount": "N/A",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Guschlbauer Kürbisbisse 4 Stk.",
+    "category": "Baked Goods",
+    "currentPrice": "2.79€",
+    "oldPrice": "N/A",
+    "packageSize": "220 g Packung",
+    "unitPrice": "12.68€/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Trolli Spookylicious",
+    "category": "Sweets & Chocolate",
+    "currentPrice": "8.99€",
+    "oldPrice": "N/A",
+    "packageSize": "1 kg Packung",
+    "unitPrice": "8.99€/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Halloween Handgemacht Torte",
+    "category": "Baked Goods",
+    "currentPrice": "16.99€",
+    "oldPrice": "N/A",
+    "packageSize": "12 Stk. per Packung",
+    "unitPrice": "N/A",
+    "discount": "N/A",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Halloween Wunsch- od. Zuckerwürfel",
+    "category": "Sweets & Chocolate",
+    "currentPrice": "3.69€",
+    "oldPrice": "N/A",
+    "packageSize": "per Stück",
+    "unitPrice": "N/A",
+    "discount": "N/A",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Orangen-Joghurt-Schnitt Block",
+    "category": "Baked Goods",
+    "currentPrice": "7.99€",
+    "oldPrice": "8.99€",
+    "packageSize": "ca. 12 Portionen",
+    "unitPrice": "N/A",
+    "discount": "-1.00€ BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Schoko-Orangentorte",
+    "category": "Baked Goods",
+    "currentPrice": "19.99€",
+    "oldPrice": "N/A",
+    "packageSize": "ca. 8 Portionen",
+    "unitPrice": "N/A",
+    "discount": "N/A",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Niemetz Schokolade Schwedenbomben div. Sorten",
+    "category": "Sweets & Chocolate",
+    "currentPrice": "1.52€",
+    "oldPrice": "2.29€",
+    "packageSize": "150 g - 180 g",
+    "unitPrice": "N/A",
+    "discount": "2+1 GRATIS",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Ritter Sport Schokolade div. Sorten",
+    "category": "Sweets & Chocolate",
+    "currentPrice": "1.79€",
+    "oldPrice": "2.19€",
+    "packageSize": "100 g Tafel",
+    "unitPrice": "1.79€/100g",
+    "discount": "-0.80€ BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Manner Neapolitaner Waffeln div. Sorten",
+    "category": "Sweets & Chocolate",
+    "currentPrice": "2.99€",
+    "oldPrice": "3.49€",
+    "packageSize": "225 g - 300 g",
+    "unitPrice": "N/A",
+    "discount": "-1.00€ BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Milka Schokolade div. Sorten",
+    "category": "Sweets & Chocolate",
+    "currentPrice": "1.99€",
+    "oldPrice": "N/A",
+    "packageSize": "100 g",
+    "unitPrice": "1.99€/100g",
+    "discount": "2+2 GRATIS",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Lorenz Naturals div. Sorten",
+    "category": "Snacks",
+    "currentPrice": "1.49€",
+    "oldPrice": "2.79€",
+    "packageSize": "95 g - 110 g",
+    "unitPrice": "N/A",
+    "discount": "-25% BILLIGER",
+    "availabilityDateRange": "17.10. - 18.10.2025"
+  },
+  {
+    "productName": "Pringles div. Sorten",
+    "category": "Snacks",
+    "currentPrice": "2.39€",
+    "oldPrice": "3.99€",
+    "packageSize": "160 g - 165 g",
+    "unitPrice": "N/A",
+    "discount": "-1.20€ BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Soletti Salzstangerl div. Sorten",
+    "category": "Snacks",
+    "currentPrice": "1.39€",
+    "oldPrice": "2.79€",
+    "packageSize": "200 g",
+    "unitPrice": "0.60€/100g",
+    "discount": "1+1 GRATIS",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Kelly's Jumpys div. Sorten",
+    "category": "Snacks",
+    "currentPrice": "1.24€",
+    "oldPrice": "2.49€",
+    "packageSize": "70 g - 80 g",
+    "unitPrice": "N/A",
+    "discount": "1+1 GRATIS",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Iglo Gemüsideen, Ideenküche, Sushi Bowl, Cremegemüse od. Reindl",
+    "category": "Frozen Food",
+    "currentPrice": "2.79€",
+    "oldPrice": "4.19€",
+    "packageSize": "300 g - 500 g",
+    "unitPrice": "N/A",
+    "discount": "2+1 GRATIS",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "The Vegetarian Butcher div. Sorten",
+    "category": "Vegan/Vegetarian",
+    "currentPrice": "2.99€",
+    "oldPrice": "4.49€",
+    "packageSize": "170 g - 200 g Packung",
+    "unitPrice": "N/A",
+    "discount": "2+1 GRATIS",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Eskimo Cremissimo div. Sorten",
+    "category": "Frozen Food",
+    "currentPrice": "2.99€",
+    "oldPrice": "4.99€",
+    "packageSize": "1 Liter",
+    "unitPrice": "2.99€/L",
+    "discount": "-40% BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Iglo Königsgarnelen",
+    "category": "Frozen Food",
+    "currentPrice": "6.49€",
+    "oldPrice": "12.59€",
+    "packageSize": "225 g Packung",
+    "unitPrice": "28.84€/kg",
+    "discount": "1+1 GRATIS",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Iglo Wildlachs Naturfilet, Portionsfilet, Vorteilspackung, MSC od. ASC",
+    "category": "Frozen Food",
+    "currentPrice": "6.49€",
+    "oldPrice": "12.59€",
+    "packageSize": "225 g Packung",
+    "unitPrice": "28.84€/kg",
+    "discount": "1+1 GRATIS",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Dr. Oetker Pizzaburger div. Sorten",
+    "category": "Frozen Food",
+    "currentPrice": "2.34€",
+    "oldPrice": "4.69€",
+    "packageSize": "370 g Packung",
+    "unitPrice": "N/A",
+    "discount": "1+1 GRATIS",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Ja! Natürlich Bio-Räucherlachs",
+    "category": "Seafood",
+    "currentPrice": "3.49€",
+    "oldPrice": "4.90€",
+    "packageSize": "100 g",
+    "unitPrice": "34.90€/kg",
+    "discount": "-30% BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Ja! Natürlich Bio-Frühstücksspeck vom Bio-Strohschwein",
+    "category": "Meat & Poultry",
+    "currentPrice": "1.99€",
+    "oldPrice": "2.79€",
+    "packageSize": "80 g Packung",
+    "unitPrice": "24.88€/kg",
+    "discount": "-28% BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Ja! Natürlich Bio-Roggenvollkornbrot",
+    "category": "Baked Goods",
+    "currentPrice": "4.99€",
+    "oldPrice": "5.49€",
+    "packageSize": "750 g",
+    "unitPrice": "6.65€/kg",
+    "discount": "-0.50€ BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Ja! Natürlich Bio-Käsescheiben div. Sorten",
+    "category": "Dairy",
+    "currentPrice": "2.29€",
+    "oldPrice": "3.19€",
+    "packageSize": "150 g - 175 g",
+    "unitPrice": "N/A",
+    "discount": "-28% BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Billa Bio Bio-Schoko-Creme mit Haselnüsse und Mandeln",
+    "category": "Spreads",
+    "currentPrice": "2.99€",
+    "oldPrice": "3.99€",
+    "packageSize": "270 g Glas",
+    "unitPrice": "11.08€/kg",
+    "discount": "-25% BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Billa Bio Bio-Akazienhonig",
+    "category": "Sweeteners",
+    "currentPrice": "3.99€",
+    "oldPrice": "4.99€",
+    "packageSize": "350 g Flasche",
+    "unitPrice": "N/A",
+    "discount": "-1.00€ BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Ja! Natürlich Bio-Haferflocken grob",
+    "category": "Cereals",
+    "currentPrice": "1.19€",
+    "oldPrice": "1.39€",
+    "packageSize": "400 g Packung",
+    "unitPrice": "N/A",
+    "discount": "-0.20€ BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Ja! Natürlich Bio-Haferdrink div. Sorten",
+    "category": "Plant-based Milk",
+    "currentPrice": "0.99€",
+    "oldPrice": "1.15€",
+    "packageSize": "1 Liter",
+    "unitPrice": "0.99€/L",
+    "discount": "-0.32€ BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Ja! Natürlich Bio-Cornflakes",
+    "category": "Cereals",
+    "currentPrice": "2.99€",
+    "oldPrice": "N/A",
+    "packageSize": "375 g",
+    "unitPrice": "7.97€/kg",
+    "discount": "-25% BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Vegavita Bio HirtenGenuss",
+    "category": "Vegan/Vegetarian",
+    "currentPrice": "1.79€",
+    "oldPrice": "1.99€",
+    "packageSize": "150 g Packung",
+    "unitPrice": "11.93€/kg",
+    "discount": "-0.20€ BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Ja! Natürlich Bio-Karotten",
+    "category": "Vegetables",
+    "currentPrice": "1.49€",
+    "oldPrice": "1.99€",
+    "packageSize": "750 g verpackt, Kl. II",
+    "unitPrice": "1.99€/kg",
+    "discount": "-26% BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Ja! Natürlich Bio-Suppengemüse",
+    "category": "Vegetables",
+    "currentPrice": "1.99€",
+    "oldPrice": "2.69€",
+    "packageSize": "500 g Tüte",
+    "unitPrice": "3.98€/kg",
+    "discount": "-26% BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "BILLA immer gut Krautsalat",
+    "category": "Vegetables",
+    "currentPrice": "1.29€",
+    "oldPrice": "1.99€",
+    "packageSize": "per Kilo",
+    "unitPrice": "1.29€/kg",
+    "discount": "-35% BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "BILLA immer gut Maroni",
+    "category": "Fruits",
+    "currentPrice": "3.99€",
+    "oldPrice": "5.99€",
+    "packageSize": "500 g Netz",
+    "unitPrice": "7.98€/kg",
+    "discount": "-33% BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Fittatensuppe",
+    "category": "Soups",
+    "currentPrice": "3.50€",
+    "oldPrice": "3.90€",
+    "packageSize": "N/A",
+    "unitPrice": "N/A",
+    "discount": "-0.70€ BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Fish & Chips Seelachs im Knusperbackteig",
+    "category": "Seafood",
+    "currentPrice": "8.90€",
+    "oldPrice": "11.80€",
+    "packageSize": "N/A",
+    "unitPrice": "N/A",
+    "discount": "-2.90€ BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Nudelpfanne mit Kürbis & Hühnerbrust",
+    "category": "Meat & Poultry",
+    "currentPrice": "9.90€",
+    "oldPrice": "12.80€",
+    "packageSize": "N/A",
+    "unitPrice": "N/A",
+    "discount": "-2.90€ BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Gefüllte Kalbsbrust",
+    "category": "Meat & Poultry",
+    "currentPrice": "14.99€",
+    "oldPrice": "N/A",
+    "packageSize": "per Kilo",
+    "unitPrice": "14.99€/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Hofstädter Surschnitzel vom Strohschwein",
+    "category": "Meat & Poultry",
+    "currentPrice": "9.74€",
+    "oldPrice": "12.99€",
+    "packageSize": "per Kilo",
+    "unitPrice": "9.74€/kg",
+    "discount": "-25% BILLIGER",
+    "availabilityDateRange": "17.10. - 18.10.2025"
+  },
+  {
+    "productName": "Hirschgulasch geschnitten",
+    "category": "Meat & Poultry",
+    "currentPrice": "9.99€",
+    "oldPrice": "11.99€",
+    "packageSize": "500 g Packung",
+    "unitPrice": "19.98€/kg",
+    "discount": "-2.00€ BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Hirschrollbraten",
+    "category": "Meat & Poultry",
+    "currentPrice": "19.99€",
+    "oldPrice": "25.99€",
+    "packageSize": "per Kilo",
+    "unitPrice": "19.99€/kg",
+    "discount": "-6.00€ BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Abraham Serrano Schinken",
+    "category": "Meat & Poultry",
+    "currentPrice": "1.59€",
+    "oldPrice": "2.39€",
+    "packageSize": "80 g",
+    "unitPrice": "19.88€/kg",
+    "discount": "2+1 GRATIS",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Berger Wachauer Rohschinken od. Hühnerschinken",
+    "category": "Meat & Poultry",
+    "currentPrice": "1.99€",
+    "oldPrice": "2.79€",
+    "packageSize": "per 100 g",
+    "unitPrice": "19.90€/kg",
+    "discount": "-0.80€ BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Berger Wachauer od. Debreziner",
+    "category": "Meat & Poultry",
+    "currentPrice": "2.99€",
+    "oldPrice": "4.29€",
+    "packageSize": "240 g",
+    "unitPrice": "12.46€/kg",
+    "discount": "-20% BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Strastnik Ungarische Salami od. Kantwurst",
+    "category": "Meat & Poultry",
+    "currentPrice": "1.74€",
+    "oldPrice": "3.49€",
+    "packageSize": "100 g",
+    "unitPrice": "17.40€/kg",
+    "discount": "1+1 GRATIS",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Leichte Kalbspariser",
+    "category": "Meat & Poultry",
+    "currentPrice": "1.79€",
+    "oldPrice": "2.39€",
+    "packageSize": "100 g",
+    "unitPrice": "17.90€/kg",
+    "discount": "-25% BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Danone Activia div. Sorten",
+    "category": "Dairy",
+    "currentPrice": "2.75€",
+    "oldPrice": "3.75€",
+    "packageSize": "4x115 g",
+    "unitPrice": "4.33€/kg",
+    "discount": "-28% BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Billa Genusswelt Fischaufstrich div. Sorten",
+    "category": "Seafood",
+    "currentPrice": "1.99€",
+    "oldPrice": "2.49€",
+    "packageSize": "125 g Packungen",
+    "unitPrice": "15.92€/kg",
+    "discount": "-20% BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Rama Culinesse div. Sorten",
+    "category": "Dairy",
+    "currentPrice": "1.99€",
+    "oldPrice": "2.59€",
+    "packageSize": "400 ml - 500 ml",
+    "unitPrice": "N/A",
+    "discount": "-1.20€ BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Kärntnermilch Blütenkäse",
+    "category": "Dairy",
+    "currentPrice": "1.79€",
+    "oldPrice": "N/A",
+    "packageSize": "per 100 g",
+    "unitPrice": "17.90€/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Schärdinger Kaiserstaler od. St. Severin",
+    "category": "Dairy",
+    "currentPrice": "1.99€",
+    "oldPrice": "2.95€",
+    "packageSize": "per 100 g",
+    "unitPrice": "15.92€/kg",
+    "discount": "-32% BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Schärdinger Joghurt Minis",
+    "category": "Dairy",
+    "currentPrice": "2.99€",
+    "oldPrice": "N/A",
+    "packageSize": "12x120 g Packung",
+    "unitPrice": "2.08€/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Bergbauer Tiroler Bergfeuer Bockshornkleekäse",
+    "category": "Dairy",
+    "currentPrice": "2.99€",
+    "oldPrice": "3.99€",
+    "packageSize": "100 g Stück",
+    "unitPrice": "29.90€/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Bavaria Blue div. Sorten",
+    "category": "Dairy",
+    "currentPrice": "2.99€",
+    "oldPrice": "3.99€",
+    "packageSize": "175 g",
+    "unitPrice": "17.09€/kg",
+    "discount": "-25% BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Schärdinger Bergbauern Joghurt im Glas",
+    "category": "Dairy",
+    "currentPrice": "0.94€",
+    "oldPrice": "1.59€",
+    "packageSize": "150 g",
+    "unitPrice": "2.09€/kg",
+    "discount": "1+1 GRATIS",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Philadelphia div. Sorten",
+    "category": "Dairy",
+    "currentPrice": "1.24€",
+    "oldPrice": "2.49€",
+    "packageSize": "150 g - 175 g",
+    "unitPrice": "N/A",
+    "discount": "1+1 GRATIS",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Vöslauer Mineralwasser div. Sorten",
+    "category": "Beverages",
+    "currentPrice": "0.59€",
+    "oldPrice": "0.89€",
+    "packageSize": "1 Liter",
+    "unitPrice": "0.59€/L",
+    "discount": "-33% BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Vöslauer Balance div. Sorten",
+    "category": "Beverages",
+    "currentPrice": "0.74€",
+    "oldPrice": "1.49€",
+    "packageSize": "0.75 Liter",
+    "unitPrice": "0.99€/L",
+    "discount": "3+3 GRATIS",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Rauch Eistee div. Sorten",
+    "category": "Beverages",
+    "currentPrice": "0.89€",
+    "oldPrice": "1.79€",
+    "packageSize": "0.5 Liter",
+    "unitPrice": "1.78€/L",
+    "discount": "3+3 GRATIS",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Happy Day Pur oder div. Sorten",
+    "category": "Beverages",
+    "currentPrice": "1.99€",
+    "oldPrice": "2.99€",
+    "packageSize": "1 Liter",
+    "unitPrice": "1.99€/L",
+    "discount": "2+1 GRATIS",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Jägermeister",
+    "category": "Spirits",
+    "currentPrice": "38.99€",
+    "oldPrice": "N/A",
+    "packageSize": "0.7 Liter, 40 Stück",
+    "unitPrice": "55.70€/L",
+    "discount": "N/A",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Absolut Vodka",
+    "category": "Spirits",
+    "currentPrice": "34.90€",
+    "oldPrice": "N/A",
+    "packageSize": "0.7 Liter Flasche",
+    "unitPrice": "49.86€/L",
+    "discount": "N/A",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Scheibelhofer Youngstar 2025",
+    "category": "Wine",
+    "currentPrice": "7.49€",
+    "oldPrice": "N/A",
+    "packageSize": "0.75 Liter Flasche",
+    "unitPrice": "9.99€/L",
+    "discount": "N/A",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Torre Oria Seda Tempranillo",
+    "category": "Wine",
+    "currentPrice": "3.99€",
+    "oldPrice": "7.50€",
+    "packageSize": "0.75 Liter",
+    "unitPrice": "5.32€/L",
+    "discount": "1+1 GRATIS",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Montelliana Prosecco Frizzante DOC",
+    "category": "Wine",
+    "currentPrice": "4.49€",
+    "oldPrice": "8.99€",
+    "packageSize": "0.75 Liter",
+    "unitPrice": "5.99€/L",
+    "discount": "1+1 GRATIS",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Gourmet Gold Katzennahrung div. Sorten",
+    "category": "Pet Food",
+    "currentPrice": "0.71€",
+    "oldPrice": "0.83€",
+    "packageSize": "85 g",
+    "unitPrice": "8.35€/kg",
+    "discount": "4+1 GRATIS",
+    "availabilityDateRange": "17.10. - 18.10.2025"
+  },
+  {
+    "productName": "Paradontax Zahncreme div. Sorten",
+    "category": "Oral Care",
+    "currentPrice": "4.29€",
+    "oldPrice": "5.49€",
+    "packageSize": "75 ml",
+    "unitPrice": "5.72€/100ml",
+    "discount": "-2.40€ BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Swiffer Trockenmagnettücher Nachfüllung div. Sorten",
+    "category": "Cleaning Supplies",
+    "currentPrice": "5.99€",
+    "oldPrice": "8.99€",
+    "packageSize": "12 Stück",
+    "unitPrice": "N/A",
+    "discount": "2+1 GRATIS",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Felix Katzennahrung Multipack div. Sorten",
+    "category": "Pet Food",
+    "currentPrice": "4.99€",
+    "oldPrice": "5.79€",
+    "packageSize": "12 Stk., 620 g",
+    "unitPrice": "N/A",
+    "discount": "-1.60€ BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Pampers Fresh Clean Feuchttücher div. Sorten",
+    "category": "Baby Care",
+    "currentPrice": "10.89€",
+    "oldPrice": "N/A",
+    "packageSize": "5x52 Stk. pro Packung",
+    "unitPrice": "N/A",
+    "discount": "N/A",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Weißer Riese Pulver Gel od. Caps div. Sorten",
+    "category": "Laundry Detergent",
+    "currentPrice": "8.99€",
+    "oldPrice": "9.99€",
+    "packageSize": "40-57 Waschgänge",
+    "unitPrice": "N/A",
+    "discount": "-1.00€ BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Fewa Renew div. Sorten",
+    "category": "Laundry Detergent",
+    "currentPrice": "9.99€",
+    "oldPrice": "12.99€",
+    "packageSize": "55 Waschgänge, 3.6 Liter",
+    "unitPrice": "N/A",
+    "discount": "-2.00€ BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Silan Weichspüler div. Sorten",
+    "category": "Fabric Softener",
+    "currentPrice": "5.49€",
+    "oldPrice": "7.49€",
+    "packageSize": "126-130 Waschgänge",
+    "unitPrice": "N/A",
+    "discount": "-26% BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Zewa Comfort Toilettenpapier div. Rollen",
+    "category": "Household",
+    "currentPrice": "6.79€",
+    "oldPrice": "N/A",
+    "packageSize": "20 Rollen",
+    "unitPrice": "N/A",
+    "discount": "N/A",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Clever Lachsfilet",
+    "category": "Seafood",
+    "currentPrice": "1.69€",
+    "oldPrice": "1.99€",
+    "packageSize": "per 100 g",
+    "unitPrice": "16.90€/kg",
+    "discount": "-0.30€ BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Clever Bauchfleisch am Stück, od. Braten",
+    "category": "Meat & Poultry",
+    "currentPrice": "5.99€",
+    "oldPrice": "N/A",
+    "packageSize": "per Kilo",
+    "unitPrice": "5.99€/kg",
+    "discount": "N/A",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Schärdinger Gouda",
+    "category": "Dairy",
+    "currentPrice": "7.99€",
+    "oldPrice": "13.99€",
+    "packageSize": "1 Kilo Packung",
+    "unitPrice": "7.99€/kg",
+    "discount": "-42% BILLIGER",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Römerquelle Mineralwasser div. Sorten",
+    "category": "Beverages",
+    "currentPrice": "0.47€",
+    "oldPrice": "0.95€",
+    "packageSize": "1 Liter",
+    "unitPrice": "0.47€/L",
+    "discount": "3+3 GRATIS",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Triebeauer Wein Miesbacher Blaufränkisch 2023",
+    "category": "Wine",
+    "currentPrice": "6.99€",
+    "oldPrice": "13.99€",
+    "packageSize": "0.75 Liter",
+    "unitPrice": "9.32€/L",
+    "discount": "1+1 GRATIS",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  },
+  {
+    "productName": "Pampers Maxi Pack div. Sorten",
+    "category": "Baby Care",
+    "currentPrice": "25.99€",
+    "oldPrice": "N/A",
+    "packageSize": "38 - 84 Stk. Packung",
+    "unitPrice": "N/A",
+    "discount": "N/A",
+    "availabilityDateRange": "16.10. - 22.10.2025"
+  }
+]
