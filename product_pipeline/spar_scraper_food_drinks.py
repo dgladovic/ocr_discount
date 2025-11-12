@@ -17,7 +17,7 @@ import requests # NEW: Library for downloading files
 TARGET_ADDRESS = "Jägerstraße, 1200 Wien, Austria" # Location to set the store
 WAIT_TIME_SECONDS = 15
 INPUT_JSON_PATH = "extracted_json/spar_scraped_offers.json" 
-IMAGE_DIR = "spar_images" # NEW: Directory for saving product images
+IMAGE_DIR = "../extracted_images/spar" # NEW: Directory for saving product images
 
 # Prioritized categories to scrape
 CATEGORIES_TO_SCRAPE = [
