@@ -4,3 +4,4 @@ chromedriver.exe
 LICENSE.chromedriver
 .env
 .env.local
+extracted_images
