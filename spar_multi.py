@@ -11,11 +11,13 @@ import re
 import json
 import os
 import hashlib
+import requests # NEW: Library for downloading files
 
 # --- Configuration ---
 TARGET_ADDRESS = "Jägerstraße, 1200 Wien, Austria" # Location to set the store
 WAIT_TIME_SECONDS = 15
 INPUT_JSON_PATH = "extracted_json/spar_scraped_offers.json" 
+IMAGE_DIR = "spar_images" # NEW: Directory for saving product images
 
 # Prioritized categories to scrape
 CATEGORIES_TO_SCRAPE = [
@@ -100,7 +102,7 @@ def click_store_select_button(driver):
 
 def search_and_select_store(driver, address):
     """Executes the full search and selection flow."""
-    print(f"   -> Setting location to: '{address}'...")
+    print(f"   -> Setting location to: '{address}'...")
     try:
         # 1. Type the address into the search input
         search_input = WebDriverWait(driver, WAIT_TIME_SECONDS).until(
@@ -128,7 +130,7 @@ def search_and_select_store(driver, address):
         # Find the first store option robustly
         store_options = parent_node_element.find_elements(By.CSS_SELECTOR, ALL_STORE_OPTIONS_SELECTOR)
         if not store_options:
-            print("   -> ERROR: No store options found after search.")
+            print("   -> ERROR: No store options found after search.")
             return False
 
         first_store_option = store_options[0]
@@ -139,7 +141,7 @@ def search_and_select_store(driver, address):
             try:
                 button_to_click = first_store_option.find_element(By.CSS_SELECTOR, STORE_BUTTON_RELATIVE_SELECTOR)
                 driver.execute_script("arguments[0].click();", button_to_click) 
-                print(f"   -> Successfully selected store: '{store_name}'. ✅")
+                print(f"   -> Successfully selected store: '{store_name}'. ✅")
                 return True
             except (ElementClickInterceptedException, StaleElementReferenceException):
                 parent_node_element = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, LOCATION_LIST_PARENT)))
@@ -150,15 +152,47 @@ def search_and_select_store(driver, address):
             except Exception:
                 break
 
-        print("   -> Failed to click 'Markt wählen' after all retries. ❌")
+        print("   -> Failed to click 'Markt wählen' after all retries. ❌")
         return False
 
     except TimeoutException:
-        print(f"   -> Timeout during store search/selection flow. FAILED. ❌")
+        print(f"   -> Timeout during store search/selection flow. FAILED. ❌")
         return False
     except Exception as e:
-        print(f"   -> Failed during store search/selection flow: {type(e).__name__}: {e}. FAILED. ❌")
+        print(f"   -> Failed during store search/selection flow: {type(e).__name__}: {e}. FAILED. ❌")
         return False
+
+# NEW: Function to download image
+def download_image(image_url, product_hash, image_dir):
+    """Downloads an image from a URL and saves it using the product hash as the filename."""
+    if not image_url or image_url == "N/A":
+        return "N/A"
+
+    os.makedirs(image_dir, exist_ok=True)
+    
+    # Simple check for extension, defaulting to jpg
+    extension = '.jpg'
+    
+    local_filename = f"{product_hash}{extension}"
+    local_filepath = os.path.join(image_dir, local_filename)
+
+    try:
+        # Use a timeout and appropriate headers for the request
+        headers = {'User-Agent': 'Mozilla/5.0'}
+        response = requests.get(image_url, headers=headers, stream=True, timeout=10)
+        response.raise_for_status() # Raise exception for bad status codes
+
+        with open(local_filepath, 'wb') as f:
+            for chunk in response.iter_content(8192):
+                f.write(chunk)
+                
+        # print(f"   -> Downloaded image to {local_filepath}")
+        return local_filepath
+
+    except requests.exceptions.RequestException as e:
+        # print(f"    -> WARNING: Failed to download image for {product_hash}. Error: {e}")
+        return "N/A"
+
 
 # =================================================================================================
 # PARSING AND SCRAPING FUNCTIONS (UNIFIED SCHEMA)
@@ -166,7 +200,7 @@ def search_and_select_store(driver, address):
 
 def parse_product_card(card, category_tag):
     """
-    Extracts data and maps it to the unified product schema.
+    Extracts data and maps it to the unified product schema, including image URL.
     """
     # --- URL & NAME ---
     link_tag = card.select_one('a.product-tile__link')
@@ -183,7 +217,11 @@ def parse_product_card(card, category_tag):
     # --- UNIT/SIZE ---
     unit_tag = card.select_one('.product-tile__name3')
     unit = unit_tag.text.strip() if unit_tag else "N/A"
-
+    
+    # --- IMAGE ---
+    img_tag = card.select_one('.product-tile__image img.adaptive-image__img') 
+    product_image_url = img_tag.get('src') if img_tag and img_tag.get('src') else "N/A" # EXTRACTING IMAGE URL
+    
     # --- PRICE ---
     current_price_tag = card.select_one('.product-price__price')
     # Clean price: remove '€' and use comma/dot for calculation later
@@ -206,12 +244,14 @@ def parse_product_card(card, category_tag):
         "discount": discount_val,
         "unitMeasure": unit, 
         "category": category_tag, # Use the category tag passed from the loop
-        "productUrl": full_url
+        "productUrl": full_url,
+        "productImageUrl": product_image_url # NEW FIELD: The URL of the image
     }
 
 def scrape_category_pages(driver, category_path, category_tag):
     """
     Handles navigation and scraping for a single category path, iterating through pages.
+    Downloads the product image for each item.
     """
     category_url = f"{BASE_URL_TEMPLATE.format(category_path=category_path)}?inAngebot=true&page=1"
     print(f"\n--- Starting category scrape: {category_tag} ({category_path}) ---")
@@ -234,7 +274,7 @@ def scrape_category_pages(driver, category_path, category_tag):
     # 2. PAGE ITERATION LOOP
     for page_num in range(1, total_pages + 1):
         page_url = f"{BASE_URL_TEMPLATE.format(category_path=category_path)}?inAngebot=true&page={page_num}"
-        print(f"   -> Scraping Page {page_num} of {total_pages}: {page_url}")
+        print(f"   -> Scraping Page {page_num} of {total_pages}: {page_url}")
         
         # Navigate if not the first page
         if page_num > 1:
@@ -253,6 +293,17 @@ def scrape_category_pages(driver, category_path, category_tag):
         for card in product_cards:
             try:
                 product_info = parse_product_card(card, category_tag)
+                
+                # --- IMAGE DOWNLOAD ---
+                local_image_path = download_image(
+                    product_info['productImageUrl'], 
+                    product_info['productHash'], 
+                    IMAGE_DIR
+                )
+                
+                # Add the local path to the data structure
+                product_info['localImagePath'] = local_image_path 
+                
                 scraped_data.append(product_info)
             except Exception:
                 continue
@@ -293,18 +344,18 @@ def main_scraper_run():
     try:
         WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, SHADOW_ROOT_HOST_ID)))
         driver.execute_script(js_command_cookie)
-        print("   -> Cookie banner successfully accepted. ✅")
+        print("   -> Cookie banner successfully accepted. ✅")
         time.sleep(1) 
     except Exception:
-        print("   -> No Shadow DOM cookie banner found or timed out. Continuing.")
+        print("   -> No Shadow DOM cookie banner found or timed out. Continuing.")
         pass
 
     # 3. SET STORE LOCATION (Attempt once)
     print("\n[Setup] Setting store location...")
     if click_store_select_button(driver) and search_and_select_store(driver, TARGET_ADDRESS):
-        print("   -> Store location set successfully. Ready to scrape.")
+        print("   -> Store location set successfully. Ready to scrape.")
     else:
-        print("   -> WARNING: Failed to set store location. Proceeding with default data. ⚠️")
+        print("   -> WARNING: Failed to set store location. Proceeding with default data. ⚠️")
 
     # 4. CATEGORY LOOP (Ensures priority: Food then Drinks)
     for category in CATEGORIES_TO_SCRAPE:
@@ -330,6 +381,7 @@ def main_scraper_run():
                 # Use ensure_ascii=False for proper handling of German characters
                 json.dump(final_data, f, ensure_ascii=False, indent=2)
             print(f"\n*** SUCCESS: Consolidated SPAR data ({final_count} products) saved to '{INPUT_JSON_PATH}'. ***")
+            print(f"*** Product images saved to the '{IMAGE_DIR}' directory. ***")
             
             # Print a sample of the unified output
             print("\n--- SAMPLE UNIFIED OUTPUT (First 3 Items) ---")
@@ -337,6 +389,7 @@ def main_scraper_run():
                 print(f"Product: {item['productName']}")
                 print(f"Price/Original: {item['currentPrice']} / {item['originalPrice']}")
                 print(f"Discount: {item['discount']} | Category: {item['category']}")
+                print(f"Image Path: {item['localImagePath']}")
                 print("---")
 
         except Exception as e:
