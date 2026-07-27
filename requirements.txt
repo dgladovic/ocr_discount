@@ -1,0 +1,9 @@
+google-genai
+pdf2image
+pillow
+python-dotenv
+psycopg2-binary
+requests
+beautifulsoup4
+selenium
+webdriver-manager

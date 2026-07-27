@@ -1,0 +1,33 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: retail_offers_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: retail_offers
+    ports:
+      - "5432:5432"
+    volumes:
+      # Automatically runs any .sql scripts in the ./db folder on first initialization
+      - ./db:/docker-entrypoint-initdb.d
+      # Persists database data on host
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build: ./ocr_backend
+    container_name: retail_offers_api
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgrespassword@db:5432/retail_offers
+    volumes:
+      - ./ocr_backend:/app
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

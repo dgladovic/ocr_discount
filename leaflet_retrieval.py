@@ -16,6 +16,8 @@ from datetime import date, timedelta
 # --- GLOBAL CONFIGURATION ---
 WAIT_TIME_SECONDS = 15
 OUTPUT_JSON_PATH = "current_active_flyers.json" 
+DOWNLOAD_DIR = os.path.abspath("downloads")
+os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
 # --- HEADLESS CHROME OPTIONS ---
 options = webdriver.ChromeOptions()
@@ -30,118 +32,118 @@ options.add_argument('--disable-gpu')
 options.add_argument('--disable-logging')
 options.add_argument('--log-level=3') 
 
+# Enable direct PDF downloading inside Headless Chrome
+chrome_prefs = {
+    "download.default_directory": DOWNLOAD_DIR,
+    "download.prompt_for_download": False,
+    "download.directory_upgrade": True,
+    "plugins.always_open_pdf_externally": True
+}
+options.add_experimental_option("prefs", chrome_prefs)
+
 
 # =========================================================================
-# === ADVANCED JS INTERCEPTOR (For dynamic PDF downloads) ===
+# === HELPER FUNCTIONS ===
 # =========================================================================
+
+def slugify(text):
+    """Generates the same safe filename slug as leaflet_downloader.py."""
+    text = str(text).lower().strip()
+    text = re.sub(r'[^\w\s-]', '', text)
+    text = re.sub(r'[-\s]+', '', text)
+    return text[:50]
 
 def get_pdf_url_via_click(driver, viewer_url, button_selector):
     """
-    Navigates to the viewer URL, handles iframes, injects a JS script to intercept 
-    programmatic download behavior, clicks the download button, and captures the raw PDF URL.
+    Navigates to the viewer URL, intercepts dynamic JS download behavior,
+    clicks the specified button, and captures the raw PDF URL (used for Penny/Hofer).
     """
     print(f"   -> Navigating to viewer: {viewer_url}")
     driver.get(viewer_url)
-    time.sleep(3) # Give viewer time to build its DOM
+    time.sleep(2)
     
-    # Clear any annoying cookie banners if present in main context
-    try:
-        driver.find_element(By.ID, "onetrust-accept-btn-handler").click()
-        time.sleep(1)
-    except:
-        pass
-
-    # --- IFRAME HANDLING ---
-    # Many viewers (Spar/iPaper) are embedded in iframes.
-    iframes = driver.find_elements(By.TAG_NAME, "iframe")
-    switched_to_iframe = False
-    for iframe in iframes:
-        src = iframe.get_attribute("src") or ""
-        if "flugblatt" in src or "ipaper" in src or "issuu" in src or "katalog" in src:
-            driver.switch_to.frame(iframe)
-            print("   -> Switched to viewer iframe.")
-            switched_to_iframe = True
-            time.sleep(1)
-            break
-            
-    # Inject JS interceptors into the active context to catch the URL request
     driver.execute_script("""
         window.__captured_pdf = null;
-        
-        // 1. Intercept window.open
-        window.open = function(url, name, specs) {
-            window.__captured_pdf = url;
-            return null;
-        };
-        
-        // 2. Intercept programmatic anchor clicks
+        window.open = function(url) { window.__captured_pdf = url; return null; };
         var origClick = HTMLAnchorElement.prototype.click;
-        HTMLAnchorElement.prototype.click = function() {
-            if (this.href) { window.__captured_pdf = this.href; }
-        };
-        
-        // 3. Intercept redirect assignments
+        HTMLAnchorElement.prototype.click = function() { if (this.href) { window.__captured_pdf = this.href; } };
         window.location.assign = function(url) { window.__captured_pdf = url; };
         window.location.replace = function(url) { window.__captured_pdf = url; };
-        
-        // 4. Intercept hidden iframes (often used for seamless downloading)
         var origAppend = Element.prototype.appendChild;
         Element.prototype.appendChild = function(child) {
-            if (child.tagName === 'IFRAME' && child.src) {
-                window.__captured_pdf = child.src;
-            }
+            if (child.tagName === 'IFRAME' && child.src) { window.__captured_pdf = child.src; }
             return origAppend.apply(this, arguments);
         };
-        
-        // 5. Catch-all listener for strict DOM link clicks
-        document.addEventListener('click', function(e) {
-            var el = e.target.closest ? e.target.closest('a') : null;
-            if (el && el.href && (el.hasAttribute('download') || el.target === '_blank' || el.href.includes('.pdf'))) {
-                window.__captured_pdf = el.href;
-                e.preventDefault();
-            }
-        }, true);
     """)
     
     try:
-        # Wait for the download button to exist
-        btn = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, button_selector)))
-        
-        # Click the button (fallback to JS click if hidden by an overlay)
-        try:
-            btn.click()
-        except:
-            driver.execute_script("arguments[0].click();", btn)
+        btn = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, button_selector)))
+        try: btn.click()
+        except: driver.execute_script("arguments[0].click();", btn)
             
         print("   -> Download triggered. Intercepting URL request...")
-        
-        # Poll up to 10 seconds for the URL to be caught by our JS hooks
         for _ in range(20):
             time.sleep(0.5)
             pdf_url = driver.execute_script("return window.__captured_pdf;")
-            
             if pdf_url:
                 if pdf_url.startswith('/'):
                     parsed = urllib.parse.urlparse(driver.current_url)
                     pdf_url = f"{parsed.scheme}://{parsed.netloc}{pdf_url}"
-                print("   -> Success! Direct PDF URL intercepted via JS.")
-                if switched_to_iframe: driver.switch_to.default_content()
+                print("   -> Success! Direct PDF URL intercepted.")
                 return pdf_url
-                
-            # If the iframe/page itself navigated directly to the PDF
-            if ".pdf" in driver.current_url.lower() and "viewer" not in driver.current_url.lower() and "embed" not in driver.current_url.lower():
-                print("   -> Success! Intercepted via current_url change.")
-                url_to_return = driver.current_url
-                if switched_to_iframe: driver.switch_to.default_content()
-                return url_to_return
-                
-    except TimeoutException:
-        print(f"   -> Timeout waiting for download button: {button_selector}")
     except Exception as e:
         print(f"   -> Error extracting PDF via JS: {e}")
         
-    if switched_to_iframe: driver.switch_to.default_content()
     return None
+
+def download_spar_pdf_via_selenium(driver, ipaper_url, target_filepath):
+    """
+    Navigates directly to the iPaper viewer page, clicks #modDownloadPdfBtn,
+    waits for Chrome to download the PDF, and renames it to the target filename.
+    """
+    print(f"   -> Navigating directly to iPaper viewer: {ipaper_url}")
+    driver.get(ipaper_url)
+    
+    try:
+        btn = WebDriverWait(driver, 15).until(
+            EC.presence_of_element_located((By.ID, "modDownloadPdfBtn"))
+        )
+    except TimeoutException:
+        print(f"   -> ERROR: #modDownloadPdfBtn not found on {ipaper_url}")
+        return False
+
+    files_before = set(os.listdir(DOWNLOAD_DIR))
+    
+    print("   -> Clicking PDF download button in Spar viewer...")
+    try:
+        btn.click()
+    except:
+        driver.execute_script("arguments[0].click();", btn)
+        
+    print("   -> Waiting for browser to download PDF...")
+    downloaded_filename = None
+    
+    # Poll for up to 15 seconds for new file to complete downloading
+    for _ in range(30):
+        time.sleep(0.5)
+        files_after = set(os.listdir(DOWNLOAD_DIR))
+        new_files = files_after - files_before
+        
+        completed_pdfs = [f for f in new_files if f.lower().endswith('.pdf') and not f.lower().endswith('.crdownload') and not f.lower().endswith('.tmp')]
+        if completed_pdfs:
+            downloaded_filename = completed_pdfs[0]
+            break
+            
+    if downloaded_filename:
+        src_path = os.path.join(DOWNLOAD_DIR, downloaded_filename)
+        if os.path.exists(target_filepath):
+            os.remove(target_filepath)
+        os.rename(src_path, target_filepath)
+        print(f"   -> SUCCESS: Directly saved Spar PDF to: {target_filepath}")
+        return True
+    else:
+        print("   -> ERROR: Timed out waiting for Spar PDF download to finish.")
+        return False
 
 
 # =========================================================================
@@ -185,11 +187,9 @@ def scrape_hofer(driver):
         return []
 
     scraped_data = []
-    html_content = driver.page_source
-    soup = BeautifulSoup(html_content, 'html.parser')
-    flyer_cards = soup.select(HOFER_FLYER_CARD_SELECTOR)
+    soup = BeautifulSoup(driver.page_source, 'html.parser')
     
-    for card in flyer_cards:
+    for card in soup.select(HOFER_FLYER_CARD_SELECTOR):
         title_tag = card.select_one(HOFER_TITLE_SELECTOR)
         title = title_tag.text.strip() if title_tag else ""
         if title != "Flugblatt": continue
@@ -289,6 +289,24 @@ def parse_spar_dates(duration_str):
         except ValueError: pass
     return None, None
 
+def get_base_ipaper_url(article):
+    img = article.select_one('img')
+    if img:
+        for attr in ['src', 'data-fallback-icon']:
+            val = img.get(attr, '')
+            if '/Image.ashx' in val:
+                return val.split('/Image.ashx')[0]
+                
+    link = article.select_one('a.flyer-teaser__teaser-inner')
+    if link and link.get('href'):
+        href = link.get('href')
+        parts = [p for p in href.split('/') if p]
+        if len(parts) >= 3 and parts[0] == 'aktionen':
+            path = "/".join(parts[1:])
+            domain = "flugblatt.interspar.at" if "interspar" in path else "flugblatt.spar.at"
+            return f"https://{domain}/{path}"
+    return None
+
 def scrape_spar(driver):
     print("\n--- Starting SPAR Scraping ---")
     scraped_data = []
@@ -306,30 +324,21 @@ def scrape_spar(driver):
                 
             title_tag = article.select_one('.flyer-teaser__caption')
             duration_tag = article.select_one('.flyer-teaser__valid')
-            link_tag = article.select_one('a.flyer-teaser__teaser-inner')
-            href = link_tag.get('href') if link_tag else None
+            title = title_tag.text.strip() if title_tag else "Title N/A"
+            duration = duration_tag.text.strip() if duration_tag else "N/A"
             
-            if href:
-                img_tag = article.select_one('img.flyer-teaser__image')
-                
-                # Retrieve the raw iPaper base URL directly to bypass the www.spar.at wrapper frame 
-                if img_tag and img_tag.get('src') and '/Image.ashx' in img_tag.get('src'):
-                    base_ipaper_url = img_tag.get('src').split('/Image.ashx')[0]
-                    viewer_url = base_ipaper_url
-                else:
-                    viewer_url = f"https://www.spar.at{href}" if href.startswith('/') else href
-                    
-                duration = duration_tag.text.strip() if duration_tag else "N/A"
-                sd, ed = parse_spar_dates(duration)
-                scraped_data.append({
-                    "Title": title_tag.text.strip() if title_tag else "Title N/A",
-                    "Retailer": article.get('data-type', 'SPAR').strip(),
-                    "ViewerURL": viewer_url,
-                    "Duration": duration,
-                    "StartDate": sd.strftime("%Y-%m-%d") if sd else "N/A",
-                    "EndDate": ed.strftime("%Y-%m-%d") if ed else "N/A",
-                    "start_date_obj": sd, "end_date_obj": ed
-                })
+            ipaper_url = get_base_ipaper_url(article)
+            sd, ed = parse_spar_dates(duration)
+            
+            scraped_data.append({
+                "Title": title,
+                "Retailer": article.get('data-type', 'SPAR').strip(),
+                "iPaperURL": ipaper_url,
+                "Duration": duration,
+                "StartDate": sd.strftime("%Y-%m-%d") if sd else "N/A",
+                "EndDate": ed.strftime("%Y-%m-%d") if ed else "N/A",
+                "start_date_obj": sd, "end_date_obj": ed
+            })
                 
     today = date.today()
     valid_flyers = [f for f in scraped_data if f.get('end_date_obj') and f['end_date_obj'] >= today]
@@ -346,10 +355,18 @@ def scrape_spar(driver):
             retailers_processed.add(ret)
             print(f"SPAR/INTERSPAR: Selected most relevant for {ret} -> {flyer['Title']}")
             
-            viewer_url = flyer.pop("ViewerURL")
-            pdf_url = get_pdf_url_via_click(driver, viewer_url, "#modDownloadPdfBtn")
+            ipaper_url = flyer.pop("iPaperURL")
+            end_date_str = flyer["EndDate"]
+            title_str = flyer["Title"]
             
-            flyer["PDF_URL"] = pdf_url if pdf_url else viewer_url
+            # Download the PDF directly in Selenium right now!
+            if ipaper_url and end_date_str != "N/A":
+                target_filename = f"{ret}_{end_date_str}_{slugify(title_str)}.pdf"
+                target_filepath = os.path.join(DOWNLOAD_DIR, target_filename)
+                download_spar_pdf_via_selenium(driver, ipaper_url, target_filepath)
+            
+            # Set PDF_URL to None since it is already downloaded
+            flyer["PDF_URL"] = None
             del flyer['start_date_obj']; del flyer['end_date_obj']
             final_results.append(flyer)
             
@@ -434,6 +451,12 @@ if __name__ == "__main__":
     try:
         service = Service(ChromeDriverManager().install())
         driver = webdriver.Chrome(service=service, options=options)
+        
+        # Ensure Chrome Headless allows downloads
+        driver.execute_cdp_cmd("Page.setDownloadBehavior", {
+            "behavior": "allow",
+            "downloadPath": DOWNLOAD_DIR
+        })
         
         hofer_results = scrape_hofer(driver)
         all_flyers.extend(hofer_results)

@@ -135,7 +135,13 @@ def extract_offers_from_pdf(client: genai.Client, pdf_file_path: str) -> dict:
     combined = {"productOffers": [], "categoryAnnouncements": []}
     pdf_filename = os.path.basename(pdf_file_path)
 
-    pages = convert_from_path(pdf_file_path, dpi=300)
+    # Wrap conversion in a try/except to catch HTML pages disguised as PDFs
+    try:
+        pages = convert_from_path(pdf_file_path, dpi=300)
+    except Exception as e:
+        print(f"  FAILED: '{pdf_filename}' is not a valid PDF or is corrupted. Skipping.")
+        return None  # Return None so we don't generate a broken JSON cache
+
     print(f"'{pdf_filename}': {len(pages)} pages")
 
     for chunk_index, page_chunk in enumerate(chunk_list(pages, PAGE_CHUNK_SIZE)):
@@ -188,6 +194,13 @@ def process_all_flyers():
 
     for pdf_path in pdf_files:
         pdf_filename = os.path.basename(pdf_path)
+        out_path = os.path.join(OUTPUT_JSON_DIR, pdf_filename.replace(".pdf", ".json"))
+        
+        # SKIP LOGIC: If JSON exists, assume already parsed successfully
+        if os.path.exists(out_path):
+            print(f"Skipping '{pdf_filename}': Already parsed ({out_path} exists).")
+            continue
+
         parts = pdf_filename.replace(".pdf", "").split("_")
         retailer_code = parts[0].lower()
         try:
@@ -196,10 +209,14 @@ def process_all_flyers():
             week_end = datetime.now().strftime("%Y-%m-%d")
 
         data = extract_offers_from_pdf(client, pdf_path)
+        
+        # If the function returned None (e.g. invalid PDF), skip saving JSON
+        if data is None:
+            continue
+            
         data["retailerCode"] = retailer_code
         data["weekEnd"] = week_end
 
-        out_path = os.path.join(OUTPUT_JSON_DIR, pdf_filename.replace(".pdf", ".json"))
         with open(out_path, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
         print(f"Saved {out_path} ({len(data['productOffers'])} offers)")
