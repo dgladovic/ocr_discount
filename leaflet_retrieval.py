@@ -43,10 +43,6 @@ HOFER_DURATION_SELECTOR = '.cms-multilayout-teaser__description'
 HOFER_LINK_SELECTOR = '.cms-multilayout-teaser__link' 
 
 def parse_hofer_dates(duration_str, current_year):
-    """
-    Parses a German duration string to extract the start and end dates.
-    Returns: (start_date_obj, end_date_obj)
-    """
     match_dates = re.findall(r'(\d{1,2})\.(\d{1,2})\.?(\d{4})?', duration_str)
     
     if not match_dates:
@@ -117,18 +113,14 @@ def scrape_hofer(driver):
         WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.ID, HOFER_COOKIE_ACCEPT_ID))
         ).click()
-        print("Hofer: Cookie banner accepted.")
         time.sleep(1)
-    except TimeoutException:
-        print("Hofer: No cookie banner found or timed out.")
-    except Exception as e:
-        print(f"Hofer: Error during cookie handling: {e}. Proceeding.")
+    except:
+        pass
 
     try:
         WebDriverWait(driver, WAIT_TIME_SECONDS).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, HOFER_FLYER_CARD_SELECTOR))
         )
-        print("Hofer: Flyer container loaded successfully.")
     except TimeoutException:
         print("Hofer: Timeout waiting for flyer content to appear.")
         return []
@@ -144,7 +136,6 @@ def scrape_hofer(driver):
             title_tag = card.select_one(HOFER_TITLE_SELECTOR)
             title = title_tag.text.strip() if title_tag else "Title N/A"
 
-            # Filter for the main weekly flyer
             if title != "Flugblatt":
                 continue
             
@@ -167,22 +158,17 @@ def scrape_hofer(driver):
 
         relevant_flyer = find_most_relevant_flyer(scraped_data)
         
-        # Visit the viewer URL to extract the true direct PDF download link
         if relevant_flyer:
             viewer_url = relevant_flyer.pop("ViewerURL")
-            print(f"Hofer: Navigating to viewer to extract PDF link ({viewer_url})")
             driver.get(viewer_url)
             
             try:
                 pdf_button = WebDriverWait(driver, WAIT_TIME_SECONDS).until(
                     EC.presence_of_element_located((By.ID, "downloadAsPdf"))
                 )
-                pdf_href = pdf_button.get_attribute("href")
-                relevant_flyer["PDF_URL"] = pdf_href
+                relevant_flyer["PDF_URL"] = pdf_button.get_attribute("href")
                 print(f"Hofer: Found direct PDF link.")
-                
             except TimeoutException:
-                print("Hofer: Failed to locate PDF download button inside the viewer.")
                 relevant_flyer["PDF_URL"] = "N/A"
             
             print("--- Finished HOFER Scraping ---")
@@ -233,7 +219,6 @@ def scrape_billa(driver):
         WebDriverWait(driver, WAIT_TIME_SECONDS).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, BILLA_PDF_LINK_SELECTOR))
         )
-        print("BILLA Flyer links loaded successfully.")
     except TimeoutException:
         print("BILLA: Timeout waiting for flyer links to appear.")
         return []
@@ -262,7 +247,6 @@ def scrape_billa(driver):
             print(f"BILLA: Found {title}")
 
         except NoSuchElementException:
-            print(f"BILLA: Warning: Could not find {title} link.")
             continue
             
     print("--- Finished BILLA Scraping ---")
@@ -306,30 +290,22 @@ def parse_spar_dates(duration_str):
     return None, None
 
 def find_most_relevant_spar_flyers(flyers_data):
-    """
-    Filters the messy list of SPAR flyers down to strictly the current week's
-    primary flyer per sub-retailer (SPAR, INTERSPAR, EUROSPAR, etc.)
-    """
     today = date.today()
     
-    # 1. Filter out flyers that are already completely expired
     valid_flyers = []
     for f in flyers_data:
         if f.get('end_date_obj') and f['end_date_obj'] >= today:
             valid_flyers.append(f)
                 
-    # 2. Extract only standard main flyers (ignoring Monatssparer, Weinwelt, etc.)
     main_flyers = []
     for f in valid_flyers:
         title_lower = f['Title'].lower()
         if 'flugblatt' in title_lower and 'sonderfolder' not in title_lower and 'magazin' not in title_lower:
             main_flyers.append(f)
             
-    # Fallback if no flyers match the 'Flugblatt' strict rule
     if not main_flyers and valid_flyers:
         main_flyers = valid_flyers
             
-    # 3. Group by Retailer to pick one winner for each brand (SPAR, INTERSPAR, etc.)
     retailer_flyers = {}
     for f in main_flyers:
         ret = f['Retailer']
@@ -339,8 +315,6 @@ def find_most_relevant_spar_flyers(flyers_data):
         
     final_results = []
     for ret, f_list in retailer_flyers.items():
-        # Sort by end_date descending, then start_date descending 
-        # (Prioritizes the newest active 1-week flyer over old overlapping 2-week flyers)
         f_list.sort(key=lambda x: (x['end_date_obj'], x['start_date_obj']), reverse=True)
         best_flyer = f_list[0]
         
@@ -361,16 +335,12 @@ def scrape_spar(driver):
     scraped_data = []
     
     for url in SPAR_URLS:
-        print(f"SPAR: Navigating to {url}")
         driver.get(url)
-        
         try:
             WebDriverWait(driver, WAIT_TIME_SECONDS).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, 'article.flyer-teaser__teaser'))
             )
-            print(f"SPAR: Flyer container loaded successfully for {url}.")
         except TimeoutException:
-            print(f"SPAR: Timeout waiting for flyer content to appear on {url}.")
             continue
             
         html_content = driver.page_source
@@ -381,7 +351,6 @@ def scrape_spar(driver):
         for article in articles:
             classes = article.get('class', [])
             
-            # The webpage marks the active ones for the selected region with `--active`
             if 'flyer-teaser__teaser--active' not in classes:
                 continue
                 
@@ -401,7 +370,6 @@ def scrape_spar(driver):
                 if img_tag and img_tag.get('src'):
                     src = img_tag.get('src')
                     base_ipaper_url = src.split('/Image.ashx')[0]
-                    # Format standard iPaper direct PDF URL
                     pdf_url = f"{base_ipaper_url}/pdf/Download.pdf"
                 else:
                     pdf_url = f"https://www.spar.at{href}"
@@ -417,16 +385,124 @@ def scrape_spar(driver):
                     "Duration": duration,
                     "StartDate": start_date_str,
                     "EndDate": end_date_str,
-                    "start_date_obj": start_date_obj, # Temporarily kept for sorting logic
+                    "start_date_obj": start_date_obj, 
                     "end_date_obj": end_date_obj
                 }
                 scraped_data.append(flyer_info)
                 
-    # Filter the noisy data to only output the single most relevant weekly flyer per brand
     filtered_results = find_most_relevant_spar_flyers(scraped_data)
     
     print("--- Finished SPAR Scraping ---")
     return filtered_results
+
+
+# =========================================================================
+# === PENNY SCRAPER LOGIC ===
+# =========================================================================
+
+PENNY_URL = "https://www.penny.at/angebote/flugblaetter"
+
+def parse_penny_dates(text_str, current_year):
+    """
+    Parses a German duration string like "Do 23.07. bis Mi 29.07.2026"
+    Returns: (start_date_obj, end_date_obj)
+    """
+    matches = re.findall(r'(\d{1,2})\.(\d{1,2})\.(\d{4})?', text_str)
+    
+    if len(matches) >= 2:
+        start_match = matches[0]
+        end_match = matches[-1]
+        
+        try:
+            end_year = int(end_match[2]) if end_match[2] else current_year
+            end_date = date(end_year, int(end_match[1]), int(end_match[0]))
+            
+            start_year = int(start_match[2]) if start_match[2] else end_year
+            start_date = date(start_year, int(start_match[1]), int(start_match[0]))
+            
+            # Handle cross-year (e.g., Dec 28 to Jan 3)
+            if start_date > end_date:
+                start_date = start_date.replace(year=end_date.year - 1)
+                
+            return start_date, end_date
+        except ValueError:
+            pass
+            
+    return None, None
+
+def scrape_penny(driver):
+    print("--- Starting PENNY Scraping ---")
+    driver.get(PENNY_URL)
+    
+    # Accept cookies if applicable
+    try:
+        WebDriverWait(driver, 5).until(
+            EC.element_to_be_clickable((By.ID, "onetrust-accept-btn-handler"))
+        ).click()
+        time.sleep(1)
+    except:
+        pass
+        
+    try:
+        WebDriverWait(driver, WAIT_TIME_SECONDS).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, 'a.ws-image__wrapper'))
+        )
+    except TimeoutException:
+        print("PENNY: Timeout waiting for flyer content to appear.")
+        return []
+        
+    html_content = driver.page_source
+    soup = BeautifulSoup(html_content, 'html.parser')
+    
+    links = soup.find_all('a', class_='ws-image__wrapper')
+    scraped_data = []
+    current_year = date.today().year
+    
+    for link in links:
+        href = link.get('href', '')
+        if 'issuu.com' not in href:
+            continue
+            
+        aria_label = link.get('aria-label', '')
+        
+        # If aria-label doesn't contain text, fallback to parsing dates from href
+        date_text = aria_label if aria_label else href
+        
+        start_date_obj, end_date_obj = parse_penny_dates(date_text, current_year)
+        
+        if start_date_obj and end_date_obj:
+            flyer_info = {
+                "Title": "PENNY Flugblatt",
+                "Retailer": "PENNY",
+                # Issuu does not expose direct static PDF links - we provide the viewer URL.
+                "PDF_URL": href, 
+                "Duration": aria_label if aria_label else "N/A",
+                "StartDate": start_date_obj.strftime("%Y-%m-%d"),
+                "EndDate": end_date_obj.strftime("%Y-%m-%d"),
+                "start_date_obj": start_date_obj,
+                "end_date_obj": end_date_obj
+            }
+            scraped_data.append(flyer_info)
+
+    today = date.today()
+    valid_flyers = [f for f in scraped_data if f['end_date_obj'] >= today]
+    
+    if valid_flyers:
+        # Prioritize the flyer that spans furthest into the future (the current/upcoming one)
+        valid_flyers.sort(key=lambda x: x['end_date_obj'], reverse=True)
+        best_flyer = valid_flyers[0]
+        
+        # Cleanup
+        del best_flyer['start_date_obj']
+        del best_flyer['end_date_obj']
+        
+        print(f"PENNY: Found active flyer -> {best_flyer['Duration']}")
+        print("--- Finished PENNY Scraping ---")
+        return [best_flyer]
+        
+    print("PENNY: No active flyers found.")
+    print("--- Finished PENNY Scraping ---")
+    return []
 
 
 # =========================================================================
@@ -452,6 +528,10 @@ if __name__ == "__main__":
         # 3. Run Spar/Interspar Scraper
         spar_results = scrape_spar(driver)
         all_flyers.extend(spar_results)
+        
+        # 4. Run Penny Scraper
+        penny_results = scrape_penny(driver)
+        all_flyers.extend(penny_results)
 
     except Exception as e:
         print(f"\nCRITICAL ERROR during script execution: {e}")
@@ -468,7 +548,6 @@ if __name__ == "__main__":
             with open(OUTPUT_JSON_PATH, 'w', encoding='utf-8') as f:
                 json.dump(all_flyers, f, ensure_ascii=False, indent=2)
             print(f"\nSUCCESS: Combined data for {len(all_flyers)} flyers saved to '{OUTPUT_JSON_PATH}'.")
-            print("NOTE: This file is overwritten daily to ensure the list is current.")
         except Exception as e:
             print(f"ERROR: Could not save combined data to JSON file: {e}")
     else:
