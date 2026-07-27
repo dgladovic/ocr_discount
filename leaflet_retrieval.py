@@ -20,7 +20,7 @@ TARGET_HOFER_TITLE = "Blättern Sie online im HOFER Flugblatt"
 
 # --- HEADLESS CHROME OPTIONS ---
 options = webdriver.ChromeOptions()
-options.add_argument('--headless=new') # Commented out for easier debugging
+# options.add_argument('--headless=new') # Commented out for easier debugging
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shm-usage')
 options.add_argument('--window-size=1920,1080')
@@ -48,7 +48,6 @@ def parse_hofer_dates(duration_str, current_year):
     Parses a German duration string to extract the start and end dates.
     Returns: (start_date_obj, end_date_obj)
     """
-    # Regex to find all date components (DD.MM.YYYY or DD.MM.)
     match_dates = re.findall(r'(\d{1,2})\.(\d{1,2})\.?(\d{4})?', duration_str)
     
     if not match_dates:
@@ -67,26 +66,18 @@ def parse_hofer_dates(duration_str, current_year):
     if not dates:
         return None, None
 
-    # The FIRST date found is typically the start date.
     start_date = dates[0]
-    # The LAST date found is typically the end date.
     end_date = dates[-1]
     
-    # Handle year turnover (e.g., Dec start, Jan end)
     if end_date < start_date and end_date.month < start_date.month:
         end_date = end_date.replace(year=end_date.year + 1)
         
     return start_date, end_date
 
 def find_most_relevant_flyer(flyers_data):
-    """
-    Analyzes all scraped Hofer flyers and determines the single most relevant one
-    based on the current date (today).
-    """
     today = date.today()
     parsed_flyers = []
 
-    # 1. Parse dates and apply year turnover logic
     current_year = today.year
     for flyer in flyers_data:
         start_date, end_date = parse_hofer_dates(flyer['Duration'], current_year)
@@ -96,29 +87,23 @@ def find_most_relevant_flyer(flyers_data):
             flyer['start_date_obj'] = start_date
             parsed_flyers.append(flyer)
 
-    # 2. Filtering Logic: Find the flyer that is current (end date >= today)
     upcoming_or_current = [f for f in parsed_flyers if f['end_date_obj'] >= today]
     
     result = None
     if upcoming_or_current:
-        # Choose the one that ends furthest in the future (the newest/most relevant cycle)
         upcoming_or_current.sort(key=lambda x: x['end_date_obj'], reverse=True)
         result = upcoming_or_current[0]
     elif parsed_flyers:
-        # Fallback: If no flyers are current, return the one that expired most recently.
         parsed_flyers.sort(key=lambda x: x['end_date_obj'], reverse=True)
         print(f"Warning: All Hofer flyers appear expired as of {today}. Returning the most recently expired flyer.")
         result = parsed_flyers[0]
         
     if result:
-        # Format the final output structure
         return {
             "Title": result["Title"],
             "Retailer": "HOFER",
             "PDF_URL": result["PDF_URL"],
-            # Original German duration string for reference
             "Duration": result["Duration"], 
-            # Parsed dates in standard YYYY-MM-DD format
             "StartDate": result["start_date_obj"].strftime("%Y-%m-%d"), 
             "EndDate": result["end_date_obj"].strftime("%Y-%m-%d")
         }
@@ -126,11 +111,9 @@ def find_most_relevant_flyer(flyers_data):
     return None
 
 def scrape_hofer(driver):
-    """Scrapes Hofer's flyer page for the most relevant PDF link."""
     print("--- Starting HOFER Scraping ---")
     driver.get(HOFER_URL)
     
-    # --- 1. HANDLE COOKIE BANNER ---
     try:
         WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.ID, HOFER_COOKIE_ACCEPT_ID))
@@ -142,7 +125,6 @@ def scrape_hofer(driver):
     except Exception as e:
         print(f"Hofer: Error during cookie handling: {e}. Proceeding.")
 
-    # --- 2. WAIT FOR FLYER CONTENT TO LOAD ---
     try:
         WebDriverWait(driver, WAIT_TIME_SECONDS).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, HOFER_FLYER_CARD_SELECTOR))
@@ -152,7 +134,6 @@ def scrape_hofer(driver):
         print("Hofer: Timeout waiting for flyer content to appear.")
         return []
 
-    # --- 3. SCRAPE AND PARSE WITH BEAUTIFULSOUP ---
     scraped_data = []
     try:
         html_content = driver.page_source
@@ -203,27 +184,18 @@ BILLA_PDF_LINK_SELECTOR = 'a[aria-label="BILLA Flugblatt als PDF downloaden"]'
 BILLA_PLUS_PDF_LINK_SELECTOR = 'a[aria-label="BILLA PLUS Flugblatt als PDF downloaden"]'
 
 def calculate_billa_duration_range():
-    """
-    Calculates the current BILLA flyer duration (Thursday to Wednesday) 
-    based on the current date.
-    Returns: (start_date_obj, end_date_obj, duration_string)
-    """
     today = date.today()
     iso_weekday = today.isoweekday() 
     
-    # Thursday (ISO 4) is the start day of the cycle.
     if iso_weekday >= 4:
-        # Today is Thu, Fri, Sat, or Sun. Start date is the current Thursday.
         days_ago = iso_weekday - 4
         start_date = today - timedelta(days=days_ago)
     else:
-        # Today is Mon, Tue, or Wed. Start date is the previous Thursday.
         days_to_subtract = iso_weekday + 3 
         start_date = today - timedelta(days=days_to_subtract)
         
     end_date = start_date + timedelta(days=6)
 
-    # Format the original German string
     duration_text = (
         f"VON DONNERSTAG, {start_date.day:02d}.{start_date.month:02d}. "
         f"BIS MITTWOCH, {end_date.day:02d}.{end_date.month:02d}.{end_date.year}"
@@ -232,7 +204,6 @@ def calculate_billa_duration_range():
     return start_date, end_date, duration_text
 
 def scrape_billa(driver):
-    """Scrapes the Billa flyer page for the current PDF download links and includes the calculated duration dates."""
     print("--- Starting BILLA Scraping ---")
     driver.get(BILLA_URL)
     scraped_data = []
@@ -246,10 +217,8 @@ def scrape_billa(driver):
         print("BILLA: Timeout waiting for flyer links to appear.")
         return []
     
-    # --- CALCULATE DURATION ---
     start_date_obj, end_date_obj, duration_text = calculate_billa_duration_range()
     
-    # --- EXTRACT PDF LINKS ---
     flyer_selectors = [
         ("BILLA Flugblatt", BILLA_PDF_LINK_SELECTOR),
         ("BILLA PLUS Flugblatt", BILLA_PLUS_PDF_LINK_SELECTOR)
@@ -264,9 +233,7 @@ def scrape_billa(driver):
                 "Title": title,
                 "Retailer": "BILLA",
                 "PDF_URL": pdf_url,
-                # Original German duration string for reference
                 "Duration": duration_text, 
-                # Parsed dates in standard YYYY-MM-DD format
                 "StartDate": start_date_obj.strftime("%Y-%m-%d"), 
                 "EndDate": end_date_obj.strftime("%Y-%m-%d")
             }
@@ -282,6 +249,120 @@ def scrape_billa(driver):
 
 
 # =========================================================================
+# === SPAR SCRAPER LOGIC ===
+# =========================================================================
+
+SPAR_URLS = [
+    "https://www.spar.at/aktionen/wien/spar",
+    "https://www.spar.at/aktionen/wien/interspar"
+]
+
+def parse_spar_dates(duration_str):
+    """
+    Parses a German duration string from Spar to extract the start and end dates.
+    Matches formats like 'Do., 23.07.26 - Mi., 29.07.26'.
+    Returns: (start_date_obj, end_date_obj)
+    """
+    if not duration_str:
+        return None, None
+        
+    matches = re.findall(r'(\d{1,2})\.(\d{1,2})\.(\d{2,4})', duration_str)
+    
+    if len(matches) >= 2:
+        start_match = matches[0]
+        end_match = matches[-1]
+        
+        try:
+            start_year = int(start_match[2])
+            if start_year < 100: 
+                start_year += 2000
+            start_date = date(start_year, int(start_match[1]), int(start_match[0]))
+            
+            end_year = int(end_match[2])
+            if end_year < 100: 
+                end_year += 2000
+            end_date = date(end_year, int(end_match[1]), int(end_match[0]))
+            
+            return start_date, end_date
+        except ValueError:
+            pass
+            
+    return None, None
+
+def scrape_spar(driver):
+    """Scrapes SPAR and INTERSPAR flyer pages for the current active PDF links."""
+    print("--- Starting SPAR Scraping ---")
+    scraped_data = []
+    
+    for url in SPAR_URLS:
+        print(f"SPAR: Navigating to {url}")
+        driver.get(url)
+        
+        try:
+            WebDriverWait(driver, WAIT_TIME_SECONDS).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, 'article.flyer-teaser__teaser'))
+            )
+            print(f"SPAR: Flyer container loaded successfully for {url}.")
+        except TimeoutException:
+            print(f"SPAR: Timeout waiting for flyer content to appear on {url}.")
+            continue
+            
+        html_content = driver.page_source
+        soup = BeautifulSoup(html_content, 'html.parser')
+        
+        # Select all flyers rendered in the HTML
+        articles = soup.find_all('article', class_='flyer-teaser__teaser')
+        
+        for article in articles:
+            classes = article.get('class', [])
+            
+            # The webpage marks visible articles (rendered to the user) with `--active`
+            if 'flyer-teaser__teaser--active' not in classes:
+                continue
+                
+            title_tag = article.select_one('.flyer-teaser__caption')
+            title = title_tag.text.strip() if title_tag else "Title N/A"
+            
+            duration_tag = article.select_one('.flyer-teaser__valid')
+            duration = duration_tag.text.strip() if duration_tag else "Duration N/A"
+            
+            link_tag = article.select_one('a.flyer-teaser__teaser-inner')
+            href = link_tag.get('href') if link_tag else None
+            
+            retailer = article.get('data-type', 'SPAR').strip()
+            
+            if href:
+                img_tag = article.select_one('img.flyer-teaser__image')
+                if img_tag and img_tag.get('src'):
+                    src = img_tag.get('src')
+                    # e.g., https://flugblatt.spar.at/wien/spar/260723-1-flugblatt-kw-30/Image.ashx?...
+                    base_ipaper_url = src.split('/Image.ashx')[0]
+                    # Direct PDF download link format for iPaper
+                    pdf_url = f"{base_ipaper_url}/pdf/Download.pdf"
+                else:
+                    # Fallback to the web viewer URL
+                    pdf_url = f"https://www.spar.at{href}"
+                    
+                start_date_obj, end_date_obj = parse_spar_dates(duration)
+                start_date_str = start_date_obj.strftime("%Y-%m-%d") if start_date_obj else "N/A"
+                end_date_str = end_date_obj.strftime("%Y-%m-%d") if end_date_obj else "N/A"
+                
+                flyer_info = {
+                    "Title": title,
+                    "Retailer": retailer,
+                    "PDF_URL": pdf_url,
+                    "Duration": duration,
+                    "StartDate": start_date_str,
+                    "EndDate": end_date_str
+                }
+                scraped_data.append(flyer_info)
+                print(f"SPAR: Found active flyer '{title}' for {retailer}")
+                
+    print("--- Finished SPAR Scraping ---")
+    return scraped_data
+
+
+# =========================================================================
 # === MAIN EXECUTION ===
 # =========================================================================
 
@@ -290,7 +371,6 @@ if __name__ == "__main__":
     all_flyers = []
     
     try:
-        # Initialize the WebDriver once
         service = Service(ChromeDriverManager().install())
         driver = webdriver.Chrome(service=service, options=options)
         
@@ -299,8 +379,12 @@ if __name__ == "__main__":
         all_flyers.extend(hofer_results)
 
         # 2. Run Billa Scraper
-        billa_results = scrape_billa(driver)
-        all_flyers.extend(billa_results)
+        # billa_results = scrape_billa(driver)
+        # all_flyers.extend(billa_results)
+        
+        # 3. Run Spar/Interspar Scraper
+        # spar_results = scrape_spar(driver)
+        # all_flyers.extend(spar_results)
 
     except Exception as e:
         print(f"\nCRITICAL ERROR during script execution: {e}")
@@ -308,15 +392,12 @@ if __name__ == "__main__":
              print("\nWebDriver kept open for debugging on critical error.")
 
     finally:
-        # Quit driver only if it hasn't been kept open due to critical failure
         if driver and 'CRITICAL ERROR' not in locals():
-            # driver.quit() # Keep open as requested for general inspection
             print("\nFinal WebDriver kept open for inspection.")
     
-    # 3. Save the combined data, overwriting the previous file
+    # Save the combined data, overwriting the previous file
     if all_flyers:
         try:
-            # Use 'w' mode to OVERWRITE the file with the current set of active flyers
             with open(OUTPUT_JSON_PATH, 'w', encoding='utf-8') as f:
                 json.dump(all_flyers, f, ensure_ascii=False, indent=2)
             print(f"\nSUCCESS: Combined data for {len(all_flyers)} flyers saved to '{OUTPUT_JSON_PATH}'.")
