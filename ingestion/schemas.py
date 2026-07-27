@@ -102,10 +102,20 @@ PRODUCT_OFFER_SCHEMA = {
         "multibuyFreeQty": {"type": "STRING", "description": "For MULTI_BUY, qty received free e.g. '1'. 'N/A' otherwise."},
         "discount": {"type": "STRING", "description": "Human-readable summary, e.g. '2+1', '-25%'."},
         "availabilityDateRange": {"type": "STRING", "description": "As shown on the flyer. 'N/A' if absent."},
+        "pageNumber": {
+            "type": "INTEGER",
+            "description": "1-based page number within the provided batch where this offer is located."
+        },
+        "boundingBox": {
+            "type": "ARRAY",
+            "items": {"type": "INTEGER"},
+            "description": "[ymin, xmin, ymax, xmax] 2D bounding box framing the product image on a 0 to 1000 scale."
+        },
     },
     "required": [
         "productName", "category", "productType", "attributes", "searchTags",
         "currentPrice", "packageSize", "offerType", "discount", "availabilityDateRange",
+        "pageNumber", "boundingBox"
     ],
 }
 

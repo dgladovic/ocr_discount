@@ -6,3 +6,7 @@ LICENSE.chromedriver
 .env.local
 extracted_images
 spar_images
+cropped_images
+ingestion/__pycache__
+db/__pycache__
+__pycache__

@@ -4,6 +4,7 @@ from psycopg2.extras import RealDictCursor
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles  # <--- Import this
 
 DB_DSN = os.environ.get(
     "DATABASE_URL", 
@@ -25,6 +26,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+os.makedirs("cropped_images", exist_ok=True)
+
+app.mount("/cropped_images", StaticFiles(directory="cropped_images"), name="cropped_images")
 
 def fetch_query(query: str, params: tuple = None):
     """Helper function to execute SELECT query and return JSON-serializable dictionaries."""

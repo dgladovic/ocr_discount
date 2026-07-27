@@ -44,16 +44,37 @@ export default function App() {
     fetchData(activeTable);
   }, [activeTable]);
 
-  const formatCellValue = (key, value) => {
-    if (value === null || value === undefined) return <span style={{ opacity: 0.3 }}>—</span>;
-    if (typeof value === 'boolean') return <span className={`badge ${value ? 'badge-yes' : ''}`}>{value ? 'Yes' : 'No'}</span>;
-    if (key.includes('image_url') || key.includes('imageUrl')) {
-      return <img src={value} alt="Product" className="product-img" onError={(e) => e.target.style.display = 'none'} />;
-    }
-    if (key.includes('price') && typeof value === 'number') return <strong>€{value.toFixed(2)}</strong>;
-    if (typeof value === 'object') return <pre style={{ margin: 0, fontSize: '0.7rem' }}>{JSON.stringify(value)}</pre>;
-    return String(value);
-  };
+const formatCellValue = (key, value) => {
+  if (value === null || value === undefined) return <span style={{ opacity: 0.3 }}>—</span>;
+  if (typeof value === 'boolean') return <span className={`badge ${value ? 'badge-yes' : ''}`}>{value ? 'Yes' : 'No'}</span>;
+  
+  // FIX: Format Image URL to point to backend (Port 8000)
+  if (key.includes('image_url') || key.includes('imageUrl')) {
+    if (!value) return <span style={{ opacity: 0.3 }}>—</span>;
+    
+    const fullImageUrl = value.startsWith('http') 
+      ? value 
+      : `${API_BASE_URL}/${value.replace(/^\//, '')}`;
+
+    return (
+      <a href={fullImageUrl} target="_blank" rel="noreferrer">
+        <img 
+          src={fullImageUrl} 
+          alt="Product" 
+          className="product-img" 
+          onError={(e) => {
+            e.target.onerror = null; 
+            e.target.style.display = 'none';
+          }} 
+        />
+      </a>
+    );
+  }
+
+  if (key.includes('price') && typeof value === 'number') return <strong>€{value.toFixed(2)}</strong>;
+  if (typeof value === 'object') return <pre style={{ margin: 0, fontSize: '0.7rem' }}>{JSON.stringify(value)}</pre>;
+  return String(value);
+};
 
   return (
     <div className="app-container">

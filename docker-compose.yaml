@@ -25,6 +25,7 @@ services:
       - DATABASE_URL=postgresql://postgres:postgrespassword@db:5432/retail_offers
     volumes:
       - ./ocr_backend:/app
+      - ./cropped_images:/app/cropped_images  # <--- Share cropped images folder with container
     depends_on:
       db:
         condition: service_healthy

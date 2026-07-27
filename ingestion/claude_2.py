@@ -4,24 +4,6 @@ Writes raw JSON to extracted_json/ in the shared shape defined in schemas.py --
 load_to_db.py reads that JSON and does the normalization + DB writes.
 
 Filename convention expected: RETAILER_YYYY-MM-DD_TITLE.pdf (YYYY-MM-DD = flyer end date)
-
-WHY CHUNKING KEPT FAILING BEFORE:
-Gemini models have "thinking" enabled by default, and thinking tokens are
-billed against the SAME max_output_tokens budget as the actual JSON response.
-Without an explicit max_output_tokens (which defaults lower than the model's
-real 65,536 ceiling in several SDKs/CLIs) and without constraining thinking,
-the model can burn an unpredictable chunk of its output budget "reasoning"
-before writing any JSON -- producing silent truncation that has nothing to
-do with how many pages you batched. This version:
-  1. Uses gemini-3.5-flash-lite, Google's model recommended for high-
-     throughput JSON extraction, with thinking_level=MINIMAL (the Gemini 3.x
-     replacement for the old thinking_budget param -- setting both in the
-     same request is a 400 error)
-  2. Sets max_output_tokens explicitly to the model's real ceiling
-  3. Batches a conservative number of pages per call (PAGE_CHUNK_SIZE),
-     sized from observed offer density with a safety margin
-  4. Auto-retries a failed chunk by splitting it in half once, so a single
-     dense chunk doesn't cost you the whole chunk's offers
 """
 import os
 import io
@@ -38,14 +20,8 @@ from ingestion.schemas import FLYER_DATA_SCHEMA
 
 DOWNLOAD_DIR = "downloads"
 OUTPUT_JSON_DIR = "extracted_json"
-# 3.5 Flash-Lite is Google's cost/latency-optimized model, explicitly
-# recommended by Google for high-throughput JSON extraction tasks like this one.
 API_MODEL = "gemini-3.5-flash-lite"
 
-# Sized from real observed data: ~12.6 offers/page average, 16 offers/page
-# worst-case, ~200 tokens/offer -> even at worst-case density this leaves a
-# ~60% safety margin against the model's 65,536 output-token ceiling.
-# Raise this if you want fewer API calls; lower it if you still see failures.
 PAGE_CHUNK_SIZE = 8
 MAX_OUTPUT_TOKENS = 65536
 
@@ -68,7 +44,10 @@ Analyze the provided high-resolution flyer images (a batch of pages from one fly
    of the discount. For MULTI_BUY offers also fill multibuyRequiredQty/multibuyFreeQty.
 6. Generate 5-10 multilingual searchTags per product offer for fuzzy search indexing.
 7. Keep productName clean of price/date clutter.
-8. If a page has no offers or banners at all (e.g. a cover page or ad), contribute nothing
+8. FOR EACH PRODUCT OFFER, ALWAYS INCLUDE:
+   - 'pageNumber': 1-based page number within this batch (1 for 1st page in batch, 2 for 2nd, etc.)
+   - 'boundingBox': [ymin, xmin, ymax, xmax] framing the product photo/box on a normalized 0 to 1000 scale.
+9. If a page has no offers or banners at all (e.g. a cover page or ad), contribute nothing
    for that page -- don't invent content.
 
 Output a single JSON object strictly conforming to the provided schema.
@@ -78,11 +57,6 @@ GENERATE_CONFIG = types.GenerateContentConfig(
     response_mime_type="application/json",
     response_schema=FLYER_DATA_SCHEMA,
     max_output_tokens=MAX_OUTPUT_TOKENS,
-    # Gemini 3.x models use thinking_level, not the old thinking_budget --
-    # setting both in the same request throws a 400 error. MINIMAL is right
-    # for straightforward schema-constrained extraction: no multi-step
-    # reasoning needed, and it keeps the full output budget available for
-    # the actual JSON instead of "thinking" tokens eating into it.
     thinking_config=types.ThinkingConfig(thinking_level=types.ThinkingLevel.MINIMAL),
 )
 
@@ -130,47 +104,54 @@ def _run_gemini(client: genai.Client, page_images: list):
 
 
 def extract_offers_from_pdf(client: genai.Client, pdf_file_path: str) -> dict:
-    """Runs the page-chunked Gemini extraction for one flyer PDF, with
-    auto-split retry if a chunk's response fails to parse."""
+    """Runs the page-chunked Gemini extraction for one flyer PDF, mapping
+    batch page numbers to global PDF page numbers."""
     combined = {"productOffers": [], "categoryAnnouncements": []}
     pdf_filename = os.path.basename(pdf_file_path)
 
-    # Wrap conversion in a try/except to catch HTML pages disguised as PDFs
     try:
         pages = convert_from_path(pdf_file_path, dpi=300)
     except Exception as e:
         print(f"  FAILED: '{pdf_filename}' is not a valid PDF or is corrupted. Skipping.")
-        return None  # Return None so we don't generate a broken JSON cache
+        return None
 
     print(f"'{pdf_filename}': {len(pages)} pages")
 
     for chunk_index, page_chunk in enumerate(chunk_list(pages, PAGE_CHUNK_SIZE)):
         chunk_num = chunk_index + 1
+        chunk_start_page = (chunk_index * PAGE_CHUNK_SIZE) + 1  # 1-based global index
         chunk_data = _run_gemini(client, page_chunk)
 
         if chunk_data is None and len(page_chunk) > 1:
-            # Retry by splitting the chunk in half -- handles the case where
-            # this particular chunk was denser than our safety margin assumed.
             print(f"  chunk {chunk_num}: retrying as two smaller chunks")
             mid = len(page_chunk) // 2
-            halves = [page_chunk[:mid], page_chunk[mid:]]
+            halves = [
+                (page_chunk[:mid], chunk_start_page),
+                (page_chunk[mid:], chunk_start_page + mid)
+            ]
             merged = {"productOffers": [], "categoryAnnouncements": []}
             any_success = False
-            for half_index, half in enumerate(halves):
-                half_data = _run_gemini(client, half)
+            for half_index, (half_pages, half_start_page) in enumerate(halves):
+                half_data = _run_gemini(client, half_pages)
                 if half_data is not None:
                     any_success = True
+                    # Convert chunk page numbers to global PDF page numbers
+                    for offer in half_data.get("productOffers", []):
+                        local_page = offer.get("pageNumber", 1)
+                        offer["globalPageNumber"] = half_start_page + local_page - 1
                     merged["productOffers"].extend(half_data.get("productOffers", []))
                     merged["categoryAnnouncements"].extend(half_data.get("categoryAnnouncements", []))
                 else:
                     print(f"    chunk {chunk_num} half {half_index + 1}: still failed, dropping those pages")
             chunk_data = merged if any_success else None
+        elif chunk_data is not None:
+            # Convert chunk-relative page numbers to global PDF page numbers
+            for offer in chunk_data.get("productOffers", []):
+                local_page = offer.get("pageNumber", 1)
+                offer["globalPageNumber"] = chunk_start_page + local_page - 1
 
         if chunk_data is None:
             print(f"  chunk {chunk_num}: FAILED, skipping ({len(page_chunk)} page(s) lost)")
-            debug_path = os.path.join(OUTPUT_JSON_DIR, f"_debug_{pdf_filename.replace('.pdf', '')}_c{chunk_num}.txt")
-            with open(debug_path, "w", encoding="utf-8") as dbg:
-                dbg.write("chunk failed to parse even after split retry\n")
             continue
 
         n_offers = len(chunk_data.get("productOffers", []))
@@ -196,7 +177,6 @@ def process_all_flyers():
         pdf_filename = os.path.basename(pdf_path)
         out_path = os.path.join(OUTPUT_JSON_DIR, pdf_filename.replace(".pdf", ".json"))
         
-        # SKIP LOGIC: If JSON exists, assume already parsed successfully
         if os.path.exists(out_path):
             print(f"Skipping '{pdf_filename}': Already parsed ({out_path} exists).")
             continue
@@ -209,8 +189,6 @@ def process_all_flyers():
             week_end = datetime.now().strftime("%Y-%m-%d")
 
         data = extract_offers_from_pdf(client, pdf_path)
-        
-        # If the function returned None (e.g. invalid PDF), skip saving JSON
         if data is None:
             continue
             
