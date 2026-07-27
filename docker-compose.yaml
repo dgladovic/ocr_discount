@@ -29,5 +29,19 @@ services:
       db:
         condition: service_healthy
 
+  frontend:
+    build: ./ocr_frontend
+    container_name: retail_offers_frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    volumes:
+      - ./ocr_frontend:/app
+      - /app/node_modules
+    depends_on:
+      - api
+
 volumes:
   postgres_data:
