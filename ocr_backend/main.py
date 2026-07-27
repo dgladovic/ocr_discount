@@ -167,3 +167,38 @@ def get_watchlist_items(
         "SELECT * FROM watchlist_items ORDER BY created_at DESC LIMIT %s OFFSET %s;",
         (limit, offset)
     )
+    
+@app.get("/store-products/{product_id}", tags=["Store Products"])
+def get_store_product_details(product_id: str):
+    """Fetch complete details for a store product, including latest price offer, retailer, and canonical link."""
+    query = """
+        SELECT 
+            sp.*,
+            r.name AS retailer_name,
+            r.code AS retailer_code,
+            po.id AS offer_id,
+            po.week_start,
+            po.week_end,
+            po.current_price,
+            po.original_price,
+            po.offer_type,
+            po.discount_percent,
+            po.multibuy_required_qty,
+            po.multibuy_free_qty,
+            po.effective_unit_price,
+            po.availability_date_range,
+            cp.id AS canonical_id,
+            cp.display_name AS canonical_display_name
+        FROM store_products sp
+        JOIN retailers r ON sp.retailer_id = r.id
+        LEFT JOIN price_offers po ON po.store_product_id = sp.id
+        LEFT JOIN store_product_links spl ON spl.store_product_id = sp.id
+        LEFT JOIN canonical_products cp ON spl.canonical_id = cp.id
+        WHERE sp.id = %s
+        ORDER BY po.week_start DESC
+        LIMIT 1;
+    """
+    rows = fetch_query(query, (product_id,))
+    if not rows:
+        raise HTTPException(status_code=404, detail="Store product not found")
+    return rows[0]
