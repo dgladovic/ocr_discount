@@ -95,6 +95,17 @@ CREATE TABLE IF NOT EXISTS category_announcements (
     availability_date_range TEXT
 );
 
+CREATE TABLE IF NOT EXISTS ingestion_logs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    retailer_code TEXT NOT NULL,
+    file_name TEXT NOT NULL,
+    status TEXT NOT NULL,              -- 'SUCCESS' | 'FAILED' | 'PARTIAL'
+    page_count INT,
+    offer_count INT DEFAULT 0,
+    error_message TEXT,
+    attempted_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 CREATE TABLE IF NOT EXISTS product_overrides (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     canonical_id UUID NOT NULL REFERENCES canonical_products(id),

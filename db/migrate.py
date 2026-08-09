@@ -17,6 +17,19 @@ def run_migrations():
                 ALTER TABLE canonical_products 
                 ADD COLUMN IF NOT EXISTS image_url TEXT;
             """)
+            print("Applying migration: Creating ingestion_logs table...")
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS ingestion_logs (
+                    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                    retailer_code TEXT NOT NULL,
+                    file_name TEXT NOT NULL,
+                    status TEXT NOT NULL,
+                    page_count INT,
+                    offer_count INT DEFAULT 0,
+                    error_message TEXT,
+                    attempted_at TIMESTAMPTZ NOT NULL DEFAULT now()
+                );
+            """)
             conn.commit()
             print("Successfully executed migration script.")
 

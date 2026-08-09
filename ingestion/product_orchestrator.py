@@ -11,34 +11,55 @@ is fixed, per specs/02-ingestion.md's acceptance criteria.
 import sys
 import traceback
 
-from ingestion.downloaders.config import fetch_all
+from ingestion.downloaders.config import fetch_all, cleanup_stale_json
 from ingestion.pdf_extractor import process_all_flyers
 from ingestion.crop_images import main as crop_all
 from ingestion.load_to_db import main as load_all
 
 
 def run():
-    print("=" * 60)
-    print("STAGE 1/4: fetching flyers")
-    print("=" * 60)
-    downloaded = fetch_all()
-    print(f"Auto-downloaded {len(downloaded)} flyer(s). "
-          f"Any retailer without a confirmed URL needs a manual drop into downloads/.")
+    current_stems: set[str] = set()
 
     print("=" * 60)
-    print("STAGE 2/4: Gemini extraction")
+    print("STAGE 1/5: fetching flyers")
     print("=" * 60)
-    process_all_flyers()
+    try:
+        downloaded, current_stems = fetch_all()
+        print(f"Auto-downloaded {len(downloaded)} flyer(s).")
+    except Exception as e:
+        print(f"Stage 1 Warning: Flyer fetching encountered error: {e}")
 
     print("=" * 60)
-    print("STAGE 3/4: cropping verification images")
+    print("STAGE 2/5: Gemini extraction")
     print("=" * 60)
-    crop_all()
+    try:
+        process_all_flyers()
+    except Exception as e:
+        print(f"Stage 2 Warning: Extraction stage encountered error: {e}")
 
     print("=" * 60)
-    print("STAGE 4/4: loading into Postgres")
+    print("STAGE 3/5: cropping verification images")
     print("=" * 60)
-    load_all()
+    try:
+        crop_all()
+    except Exception as e:
+        print(f"Stage 3 Warning: Cropping stage encountered error: {e}")
+
+    print("=" * 60)
+    print("STAGE 4/5: loading into Postgres")
+    print("=" * 60)
+    try:
+        load_all()
+    except Exception as e:
+        print(f"Stage 4 Warning: Database loading stage encountered error: {e}")
+
+    print("=" * 60)
+    print("STAGE 5/5: cleaning up stale intermediate files")
+    print("=" * 60)
+    try:
+        cleanup_stale_json(current_stems)
+    except Exception as e:
+        print(f"Stage 5 Warning: JSON cleanup encountered error: {e}")
 
     print("=" * 60)
     print("Weekly pipeline run complete.")

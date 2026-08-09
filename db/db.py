@@ -206,3 +206,16 @@ def insert_price_offer(conn, store_product_id: str, source_document_id: str | No
                 offer.get("imageUrl"), offer.get("availabilityDateRange"),
             ),
         )
+
+
+def log_ingestion_run(conn, retailer_code: str, file_name: str, status: str,
+                      page_count: int | None = None, offer_count: int = 0, error_message: str | None = None):
+    """Log an ingestion attempt (success, failure, or partial) to ingestion_logs table."""
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            INSERT INTO ingestion_logs (retailer_code, file_name, status, page_count, offer_count, error_message)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            """,
+            (retailer_code, file_name, status, page_count, offer_count, error_message),
+        )

@@ -34,7 +34,7 @@ services:
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - INGESTION_SCHEDULE_DAY=monday
       - INGESTION_SCHEDULE_TIME=05:00
-      - RUN_ON_STARTUP=false
+      - RUN_ON_STARTUP=true
       # Per retailer, once its flyer URL is confirmed (see ingestion/downloaders/config.py):
       # - HOFER_FLYER_URL=...
     volumes:
@@ -45,34 +45,39 @@ services:
       db:
         condition: service_healthy
 
+
   api:
-    build: ./ocr_backend
+    build:
+      context: ./ocr_backend
+      dockerfile: Dockerfile
     container_name: retail_offers_api
-    restart: always
-    ports:
-      - "8000:8000"
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     environment:
       - DATABASE_URL=postgresql://postgres:postgrespassword@db:5432/retail_offers
+      - PYTHONUNBUFFERED=1
     volumes:
-      - ./ocr_backend:/app
-      - ./cropped_images:/app/cropped_images  # <--- same volume ingestion writes crops into
+      - ./ocr_backend/app:/app/app
+      - ./cropped_images:/app/cropped_images
+    ports:
+      - "8000:8000"
     depends_on:
       db:
         condition: service_healthy
 
   frontend:
-    build: ./ocr_frontend
+    build:
+      context: ./ocr_frontend
+      dockerfile: Dockerfile
     container_name: retail_offers_frontend
-    restart: always
-    ports:
-      - "3000:3000"
+    command: npm run dev -- --host
     environment:
       - VITE_API_URL=http://localhost:8000
+      - WATCHPACK_POLLING=true  # Enable file polling for Windows/WSL2
     volumes:
-      - ./ocr_frontend:/app
-      - /app/node_modules
-    depends_on:
-      - api
+      - ./ocr_frontend:/app        # <--- Mount the entire ocr_frontend folder live
+      - /app/node_modules          # Preserve container node_modules
+    ports:
+      - "3000:3000"
 
 volumes:
   postgres_data:

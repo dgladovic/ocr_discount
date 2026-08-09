@@ -17,11 +17,13 @@ from pdf2image import convert_from_path
 from dotenv import load_dotenv
 
 from ingestion.schemas import FLYER_DATA_SCHEMA
+from ingestion.downloaders.config import RETAILER_CHUNK_SIZES
 
 DOWNLOAD_DIR = "downloads"
 OUTPUT_JSON_DIR = "extracted_json"
 API_MODEL = "gemini-3.5-flash-lite"
-PAGE_CHUNK_SIZE = 8  # Gemini asset limit is 32; keep a safe buffer
+DEFAULT_PAGE_CHUNK_SIZE = 8  # Gemini asset limit is 32; keep a safe buffer
+
 
 os.makedirs(OUTPUT_JSON_DIR, exist_ok=True)
 
@@ -59,22 +61,31 @@ Output a single JSON object strictly conforming to the provided schema.
 """
 
 
+def _try_log_to_db(retailer_code: str, file_name: str, status: str, page_count: int | None = None, offer_count: int = 0, error_message: str | None = None):
+    try:
+        from db.db import get_conn, log_ingestion_run
+        with get_conn() as conn:
+            log_ingestion_run(conn, retailer_code, file_name, status, page_count, offer_count, error_message)
+    except Exception:
+        pass
+
+
 def chunk_list(data: list, size: int):
     for i in range(0, len(data), size):
         yield data[i:i + size]
 
 
-def extract_offers_from_pdf(client: genai.Client, pdf_file_path: str) -> dict:
-    """Runs the full page-chunked Gemini extraction for one flyer PDF."""
+def extract_offers_from_pdf(client: genai.Client, pdf_file_path: str, chunk_size: int = DEFAULT_PAGE_CHUNK_SIZE) -> tuple[dict, int]:
+    """Runs the page-chunked Gemini extraction for one flyer PDF using a configured chunk size."""
     all_uploaded_files = []
     combined = {"productOffers": [], "categoryAnnouncements": []}
     pdf_filename = os.path.basename(pdf_file_path)
 
     try:
         pages = convert_from_path(pdf_file_path, dpi=300)
-        print(f"'{pdf_filename}': {len(pages)} pages")
+        print(f"'{pdf_filename}': {len(pages)} pages (using chunk size: {chunk_size})")
 
-        for chunk_index, page_chunk in enumerate(chunk_list(pages, PAGE_CHUNK_SIZE)):
+        for chunk_index, page_chunk in enumerate(chunk_list(pages, chunk_size)):
             chunk_files = []
             for page_image in page_chunk:
                 buf = io.BytesIO()
@@ -95,10 +106,7 @@ def extract_offers_from_pdf(client: genai.Client, pdf_file_path: str) -> dict:
             try:
                 chunk_data = json.loads(response.text)
                 offers = chunk_data.get("productOffers", [])
-                # Gemini's pageNumber is relative to THIS chunk's images, not the
-                # whole PDF -- translate to a document-absolute page number so
-                # crop_images.py can index into the full rendered PDF correctly.
-                start_page = chunk_index * PAGE_CHUNK_SIZE + 1
+                start_page = chunk_index * chunk_size + 1
                 for offer in offers:
                     local_page = offer.get("pageNumber", 1)
                     offer["globalPageNumber"] = start_page + max(local_page - 1, 0)
@@ -138,16 +146,32 @@ def process_all_flyers():
         except (IndexError, ValueError):
             week_end = datetime.now().strftime("%Y-%m-%d")
 
-        data, page_count = extract_offers_from_pdf(client, pdf_path)
-        data["retailerCode"] = retailer_code
-        data["weekEnd"] = week_end
-        data["sourceFilePath"] = pdf_path
-        data["pageCount"] = page_count
-
+        chunk_size = RETAILER_CHUNK_SIZES.get(retailer_code, RETAILER_CHUNK_SIZES.get("default", DEFAULT_PAGE_CHUNK_SIZE))
         out_path = os.path.join(OUTPUT_JSON_DIR, pdf_filename.replace(".pdf", ".json"))
-        with open(out_path, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
-        print(f"Saved {out_path} ({len(data['productOffers'])} offers)")
+
+        # Skip Gemini extraction if a JSON for this exact leaflet already exists
+        if os.path.exists(out_path):
+            print(f"'{pdf_filename}': extracted JSON already exists — skipping Gemini extraction")
+            continue
+
+        try:
+            data, page_count = extract_offers_from_pdf(client, pdf_path, chunk_size=chunk_size)
+            data["retailerCode"] = retailer_code
+            data["weekEnd"] = week_end
+            data["sourceFilePath"] = pdf_path
+            data["pageCount"] = page_count
+
+            with open(out_path, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+            offer_count = len(data["productOffers"])
+            print(f"Saved {out_path} ({offer_count} offers)")
+
+            _try_log_to_db(retailer_code, pdf_filename, "SUCCESS", page_count, offer_count)
+        except Exception as e:
+            err_msg = f"Extraction failed: {e}"
+            print(f"ERROR extracting '{pdf_filename}': {err_msg}")
+            _try_log_to_db(retailer_code, pdf_filename, "FAILED", None, 0, err_msg)
+            continue
 
 
 if __name__ == "__main__":

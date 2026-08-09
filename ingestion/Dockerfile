@@ -3,6 +3,8 @@
 # worker and any one-off manual runs.
 FROM python:3.11-slim
 
+# Force Python to stream print() statements directly to Docker logs instantly
+ENV PYTHONUNBUFFERED=1
 # Tell Python that /app is the root directory for modules
 ENV PYTHONPATH="/app"
 

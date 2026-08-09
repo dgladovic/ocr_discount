@@ -47,7 +47,7 @@ def crop_image_from_box(page_image: Image.Image, box: list) -> Image.Image | Non
 
 
 def _check_db_canonical_has_image(offer: dict) -> bool:
-    """Optional DB check: returns True if a matching canonical product already has an image."""
+    """Returns True ONLY if a matching canonical product has an image AND that file exists on disk."""
     try:
         from db.db import get_conn
         from ingestion.normalize import normalize_offer
@@ -68,7 +68,12 @@ def _check_db_canonical_has_image(offer: dict) -> bool:
                     (norm["category"], norm["productType"], norm.get("brand"),
                      norm.get("unit_size"), norm.get("unit_measurement"), norm.get("fat_percent")),
                 )
-                return cur.fetchone() is not None
+                row = cur.fetchone()
+                if row and row[0]:
+                    # Make sure the file in the database ACTUALLY exists on disk!
+                    db_image_path = row[0]
+                    return os.path.exists(db_image_path)
+                return False
     except Exception:
         return False
 
@@ -99,8 +104,9 @@ def process_json_file(json_path: str):
     # Filter offers that actually need cropping (no imageUrl set & no canonical image in DB)
     offers_to_crop = []
     for idx, offer in enumerate(product_offers):
-        if offer.get("imageUrl"):
-            continue
+        existing_img = offer.get("imageUrl")
+        if existing_img and os.path.exists(existing_img):
+            continue  # Only skip if the file ACTUALLY exists on disk!
         if _check_db_canonical_has_image(offer):
             # Canonical product already has an image, skip cropping
             continue
