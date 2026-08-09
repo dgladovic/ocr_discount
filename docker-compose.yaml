@@ -10,10 +10,40 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      # Automatically runs any .sql scripts in the ./db folder on first initialization
+      # Automatically runs any .sql scripts in ./db on first initialization
       - ./db:/docker-entrypoint-initdb.d
-      # Persists database data on host
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d retail_offers"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Scheduled worker: downloads flyers, runs Gemini extraction, crops
+  # verification images, and loads everything into Postgres once a week.
+  # Writes to the same DB and the same cropped_images/ volume the api reads
+  # from -- no direct api<->ingestion coupling needed beyond that.
+  ingestion:
+    build:
+      context: .
+      dockerfile: ingestion/Dockerfile
+    container_name: retail_offers_ingestion
+    restart: always
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgrespassword@db:5432/retail_offers
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - INGESTION_SCHEDULE_DAY=monday
+      - INGESTION_SCHEDULE_TIME=05:00
+      - RUN_ON_STARTUP=false
+      # Per retailer, once its flyer URL is confirmed (see ingestion/downloaders/config.py):
+      # - HOFER_FLYER_URL=...
+    volumes:
+      - ./downloads:/app/downloads
+      - ./extracted_json:/app/extracted_json
+      - ./cropped_images:/app/cropped_images
+    depends_on:
+      db:
+        condition: service_healthy
 
   api:
     build: ./ocr_backend
@@ -25,7 +55,7 @@ services:
       - DATABASE_URL=postgresql://postgres:postgrespassword@db:5432/retail_offers
     volumes:
       - ./ocr_backend:/app
-      - ./cropped_images:/app/cropped_images  # <--- Share cropped images folder with container
+      - ./cropped_images:/app/cropped_images  # <--- same volume ingestion writes crops into
     depends_on:
       db:
         condition: service_healthy

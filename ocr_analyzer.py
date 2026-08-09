@@ -131,7 +131,7 @@ def post_process_data(raw_data: dict, pdf_filename: str) -> dict:
     for offer in raw_data.get('productOffers', []):
         # 1. GENERATE UNIQUE PRODUCT HASH (Deterministic and stable identifier)
         # The model cleaned the input fields, now we generate the hash from them.
-        product_key = f"{offer.get('productName', '')}|{offer.get('category', '')}"
+        product_key = f"{offer.get('productName', '')}|{offer.get('packageSize', '')}"
         offer['productHash'] = slugify(product_key)
         
         # 2. PARSE DATES (for transactional data)

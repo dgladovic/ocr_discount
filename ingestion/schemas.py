@@ -71,14 +71,12 @@ ATTRIBUTES_SCHEMA = {
     "type": "OBJECT",
     "properties": {
         "brand": {"type": "STRING", "description": "Brand name as printed, e.g. 'NÖM'. Use 'N/A' if not visible."},
-        "volume": {"type": "STRING", "description": "Liquid size as shown, e.g. '1 l', '500 ml'. 'N/A' if not sold by volume."},
-        "weight": {"type": "STRING", "description": "Solid size as shown, e.g. '500 g', '1 kg'. 'N/A' if not sold by weight."},
-        "count": {"type": "STRING", "description": "Countable quantity, e.g. '10 Stück', '6 pcs'. 'N/A' if not countable."},
+        "unitSize": {"type": "STRING", "description": "The package size exactly as printed, whatever kind of unit it is -- e.g. '1 l', '500 g', '10 Stück', '3 Waschladungen'. This covers weight, volume, and countable items in one field. Use 'N/A' if no size/quantity is shown."},
         "fatPercent": {"type": "STRING", "description": "Fat content as printed, e.g. '3,5%'. 'N/A' if not applicable."},
         "alcoholPercent": {"type": "STRING", "description": "Alcohol content as printed, e.g. '5% vol'. 'N/A' if not applicable."},
         "organic": {"type": "STRING", "enum": ["yes", "no", "unknown"], "description": "Whether labeled organic/Bio."},
     },
-    "required": ["brand", "volume", "weight", "count", "fatPercent", "alcoholPercent", "organic"],
+    "required": ["brand", "unitSize", "fatPercent", "alcoholPercent", "organic"],
 }
 
 PRODUCT_OFFER_SCHEMA = {
@@ -102,20 +100,15 @@ PRODUCT_OFFER_SCHEMA = {
         "multibuyFreeQty": {"type": "STRING", "description": "For MULTI_BUY, qty received free e.g. '1'. 'N/A' otherwise."},
         "discount": {"type": "STRING", "description": "Human-readable summary, e.g. '2+1', '-25%'."},
         "availabilityDateRange": {"type": "STRING", "description": "As shown on the flyer. 'N/A' if absent."},
-        "pageNumber": {
-            "type": "INTEGER",
-            "description": "1-based page number within the provided batch where this offer is located."
-        },
-        "boundingBox": {
-            "type": "ARRAY",
-            "items": {"type": "INTEGER"},
-            "description": "[ymin, xmin, ymax, xmax] 2D bounding box framing the product image on a 0 to 1000 scale."
-        },
+        "pageNumber": {"type": "INTEGER",
+                       "description": "1-based page number within the provided batch of images where this offer is located."},
+        "boundingBox": {"type": "ARRAY", "items": {"type": "INTEGER"},
+                         "description": "[ymin, xmin, ymax, xmax] bounding box tightly framing the product's image, 0-1000 scale."},
     },
     "required": [
         "productName", "category", "productType", "attributes", "searchTags",
         "currentPrice", "packageSize", "offerType", "discount", "availabilityDateRange",
-        "pageNumber", "boundingBox"
+        "pageNumber", "boundingBox",
     ],
 }
 
