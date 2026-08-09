@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Layers } from 'lucide-react';
+import { ArrowLeft, Layers, FileText } from 'lucide-react';
 import { API_BASE_URL } from '../constants/tables';
 
 export default function StoreProductDetailPage() {
@@ -38,6 +38,11 @@ export default function StoreProductDetailPage() {
   const rawUrl = product.image_url ? String(product.image_url).replace(/\\/g, '/') : null;
   const imageUrl = rawUrl
     ? (rawUrl.startsWith('http') ? rawUrl : `${API_BASE_URL}/${rawUrl.replace(/^\//, '')}`)
+    : null;
+
+  // Construct PDF deep-link URL
+  const pdfFullUrl = product.flyer_pdf_url 
+    ? `${API_BASE_URL}/${product.flyer_pdf_url}`
     : null;
 
   return (
@@ -91,6 +96,27 @@ export default function StoreProductDetailPage() {
             <p style={{ opacity: 0.6 }}>No current price offer recorded.</p>
           )}
 
+          {/* Action Buttons: PDF Deep-Link & Canonical Link */}
+          <div style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap', margin: '1.5rem 0' }}>
+            {pdfFullUrl && (
+              <a
+                href={pdfFullUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="button outline"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', color: '#4ade80', borderColor: '#4ade80' }}
+              >
+                <FileText size={16} /> View in Flyer {product.flyer_page_number ? `(Page ${product.flyer_page_number})` : ''}
+              </a>
+            )}
+
+            {product.canonical_id && (
+              <Link to={`/canonical/${product.canonical_id}`} className="button" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Layers size={16} /> View Canonical Product ({product.canonical_display_name})
+              </Link>
+            )}
+          </div>
+
           <h4>Raw Attributes</h4>
           <p style={{ fontSize: '0.9rem', opacity: 0.8, lineHeight: 1.6 }}>
             Category Raw: <strong>{product.category_raw || '—'}</strong><br />
@@ -98,14 +124,6 @@ export default function StoreProductDetailPage() {
             Brand Raw: <strong>{product.brand_raw || '—'}</strong><br />
             Unit Size Raw: <strong>{product.unit_size_raw || '—'}</strong>
           </p>
-
-          {product.canonical_id && (
-            <div style={{ marginTop: '1.5rem' }}>
-              <Link to={`/canonical/${product.canonical_id}`} className="button" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem' }}>
-                <Layers size={16} /> View Canonical Product ({product.canonical_display_name})
-              </Link>
-            </div>
-          )}
         </div>
       </div>
     </div>

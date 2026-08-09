@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Tag, Calendar, ShieldCheck, DollarSign, ShoppingBag, ExternalLink } from 'lucide-react';
+import { 
+  ArrowLeft, Tag, Calendar, ShieldCheck, DollarSign, 
+  ShoppingBag, ExternalLink, FileText 
+} from 'lucide-react';
 import { API_BASE_URL } from '../constants/tables';
 
 export default function CanonicalDetailPage() {
@@ -39,16 +42,21 @@ export default function CanonicalDetailPage() {
   const activeOffers = details?.active_offers || [];
   const priceHistory = details?.price_history || [];
 
-  // Extract distinct linked store products per retailer
+  // Extract distinct linked store products per retailer with image URLs
   const linkedStoreProductsMap = {};
   priceHistory.forEach(item => {
     if (item.store_product_id && !linkedStoreProductsMap[item.store_product_id]) {
+      const imgRaw = item.store_product_image_url ? String(item.store_product_image_url).replace(/\\/g, '/') : null;
+      const imgFull = imgRaw 
+        ? (imgRaw.startsWith('http') ? imgRaw : `${API_BASE_URL}/${imgRaw.replace(/^\//, '')}`)
+        : null;
+
       linkedStoreProductsMap[item.store_product_id] = {
         id: item.store_product_id,
         name_raw: item.product_name_raw,
         retailer_name: item.retailer_name,
         retailer_code: item.retailer_code,
-        image_url: item.store_product_image_url
+        image_url: imgFull
       };
     }
   });
@@ -112,45 +120,79 @@ export default function CanonicalDetailPage() {
           <p style={{ opacity: 0.7 }}>No active flyer deals available for this product this week.</p>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
-            {activeOffers.map((offer) => (
-              <div
-                key={offer.offer_id}
-                style={{
-                  background: 'var(--pico-card-background-color)',
-                  border: '1px solid #2e7d32',
-                  borderRadius: '10px',
-                  padding: '1.2rem',
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <strong style={{ fontSize: '1.1rem', color: '#2e7d32' }}>{offer.retailer_name}</strong>
-                  {offer.discount_percent && (
-                    <span className="badge" style={{ background: '#d32f2f', color: '#fff' }}>
-                      -{offer.discount_percent}% OFF
-                    </span>
+            {activeOffers.map((offer) => {
+              const pdfFullUrl = offer.flyer_pdf_url ? `${API_BASE_URL}/${offer.flyer_pdf_url}` : null;
+
+              return (
+                <div
+                  key={offer.offer_id}
+                  style={{
+                    background: 'var(--pico-card-background-color)',
+                    border: '1px solid #2e7d32',
+                    borderRadius: '10px',
+                    padding: '1.2rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justify: 'space-between'
+                  }}
+                >
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                      <strong style={{ fontSize: '1.1rem', color: '#2e7d32' }}>{offer.retailer_name}</strong>
+                      {offer.discount_percent && (
+                        <span className="badge" style={{ background: '#d32f2f', color: '#fff' }}>
+                          -{offer.discount_percent}% OFF
+                        </span>
+                      )}
+                    </div>
+
+                    <div style={{ margin: '0.5rem 0' }}>
+                      <span style={{ fontSize: '1.8rem', fontWeight: 800, color: '#2e7d32' }}>
+                        €{Number(offer.current_price || 0).toFixed(2)}
+                      </span>
+                      {offer.original_price && (
+                        <span className="big-old-price" style={{ fontSize: '1.1rem', marginLeft: '0.5rem' }}>
+                          €{Number(offer.original_price).toFixed(2)}
+                        </span>
+                      )}
+                    </div>
+
+                    <p style={{ fontSize: '0.85rem', margin: '0.4rem 0', opacity: 0.8 }}>
+                      <Calendar size={14} style={{ verticalAlign: 'middle', marginRight: '4px' }} />
+                      {offer.week_start} to {offer.week_end}
+                    </p>
+                    <p style={{ fontSize: '0.8rem', margin: 0, opacity: 0.6 }}>
+                      Store Product Name: <strong>{offer.product_name_raw}</strong>
+                    </p>
+                  </div>
+
+                  {/* Flyer PDF Deep-Link Button */}
+                  {pdfFullUrl && (
+                    <div style={{ marginTop: '1rem', paddingTop: '0.8rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                      <a
+                        href={pdfFullUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="button outline"
+                        style={{
+                          fontSize: '0.8rem',
+                          padding: '0.35rem 0.7rem',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.4rem',
+                          textDecoration: 'none',
+                          color: '#4ade80',
+                          borderColor: '#4ade80',
+                          margin: 0
+                        }}
+                      >
+                        <FileText size={14} /> Open in Flyer {offer.flyer_page_number ? `(Page ${offer.flyer_page_number})` : ''}
+                      </a>
+                    </div>
                   )}
                 </div>
-
-                <div style={{ margin: '0.5rem 0' }}>
-                  <span style={{ fontSize: '1.8rem', fontWeight: 800, color: '#2e7d32' }}>
-                    €{Number(offer.current_price || 0).toFixed(2)}
-                  </span>
-                  {offer.original_price && (
-                    <span className="big-old-price" style={{ fontSize: '1.1rem', marginLeft: '0.5rem' }}>
-                      €{Number(offer.original_price).toFixed(2)}
-                    </span>
-                  )}
-                </div>
-
-                <p style={{ fontSize: '0.85rem', margin: '0.4rem 0', opacity: 0.8 }}>
-                  <Calendar size={14} style={{ verticalAlign: 'middle', marginRight: '4px' }} />
-                  {offer.week_start} to {offer.week_end}
-                </p>
-                <p style={{ fontSize: '0.8rem', margin: 0, opacity: 0.6 }}>
-                  Store Product Raw Name: <strong>{offer.product_name_raw}</strong>
-                </p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
@@ -176,23 +218,27 @@ export default function CanonicalDetailPage() {
                   padding: '1rem',
                   cursor: 'pointer',
                   display: 'flex',
-                  flexDirection: 'column',
+                  gap: '0.8rem',
+                  alignItems: 'center',
                   justify: 'space-between'
                 }}
               >
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-                    <span className="badge">{sp.retailer_name}</span>
-                    <ExternalLink size={14} style={{ opacity: 0.5 }} />
+                {/* Store Product Crop Thumbnail */}
+                {sp.image_url && (
+                  <div style={{ width: '50px', height: '50px', borderRadius: '6px', overflow: 'hidden', background: 'rgba(0,0,0,0.2)', flexShrink: 0 }}>
+                    <img src={sp.image_url} alt={sp.name_raw} style={{ width: '100%', height: '100%', objectFit: 'contain' }} onError={(e) => { e.target.style.display = 'none'; }} />
                   </div>
-                  <strong style={{ fontSize: '0.95rem', display: 'block', marginTop: '0.3rem' }}>
+                )}
+
+                <div style={{ flexGrow: 1 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.2rem' }}>
+                    <span className="badge">{sp.retailer_name}</span>
+                    <ExternalLink size={12} style={{ opacity: 0.5 }} />
+                  </div>
+                  <strong style={{ fontSize: '0.88rem', display: 'block', lineHeight: 1.2 }}>
                     {sp.name_raw}
                   </strong>
                 </div>
-
-                <small style={{ opacity: 0.5, marginTop: '0.8rem', fontSize: '0.75rem' }}>
-                  Store Product ID: {sp.id.substring(0, 8)}...
-                </small>
               </div>
             ))}
           </div>
@@ -219,22 +265,34 @@ export default function CanonicalDetailPage() {
                   <th>Original Price</th>
                   <th>Discount</th>
                   <th>Type</th>
-                  <th>Base Price</th>
+                  <th>Flyer PDF</th>
                 </tr>
               </thead>
               <tbody>
-                {priceHistory.map((h) => (
-                  <tr key={h.offer_id}>
-                    <td><strong>{h.retailer_name}</strong></td>
-                    <td>{h.week_start}</td>
-                    <td>{h.week_end}</td>
-                    <td><strong style={{ color: '#2e7d32' }}>€{Number(h.current_price || 0).toFixed(2)}</strong></td>
-                    <td>{h.original_price ? `€${Number(h.original_price).toFixed(2)}` : '—'}</td>
-                    <td>{h.discount_percent ? `-${h.discount_percent}%` : '—'}</td>
-                    <td><span className="badge">{h.offer_type || 'WEEKLY_SPECIAL'}</span></td>
-                    <td>{h.base_price ? `€${h.base_price} / ${h.base_price_unit}` : '—'}</td>
-                  </tr>
-                ))}
+                {priceHistory.map((h) => {
+                  const pdfUrl = h.flyer_pdf_url ? `${API_BASE_URL}/${h.flyer_pdf_url}` : null;
+
+                  return (
+                    <tr key={h.offer_id}>
+                      <td><strong>{h.retailer_name}</strong></td>
+                      <td>{h.week_start}</td>
+                      <td>{h.week_end}</td>
+                      <td><strong style={{ color: '#2e7d32' }}>€{Number(h.current_price || 0).toFixed(2)}</strong></td>
+                      <td>{h.original_price ? `€${Number(h.original_price).toFixed(2)}` : '—'}</td>
+                      <td>{h.discount_percent ? `-${h.discount_percent}%` : '—'}</td>
+                      <td><span className="badge">{h.offer_type || 'WEEKLY_SPECIAL'}</span></td>
+                      <td>
+                        {pdfUrl ? (
+                          <a href={pdfUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#4ade80', fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}>
+                            <FileText size={12} /> Page {h.flyer_page_number || '—'}
+                          </a>
+                        ) : (
+                          '—'
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

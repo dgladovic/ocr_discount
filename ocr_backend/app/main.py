@@ -14,7 +14,6 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# Enable CORS for frontend integration
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -23,8 +22,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Ensure directories exist and mount static files
 os.makedirs("cropped_images", exist_ok=True)
+os.makedirs("downloads", exist_ok=True)
+
 app.mount("/cropped_images", StaticFiles(directory="cropped_images"), name="cropped_images")
+app.mount("/downloads", StaticFiles(directory="downloads"), name="downloads") # <--- Mount downloads folder
 
 # Register Routers
 app.include_router(health.router)

@@ -7,12 +7,14 @@ export default function CanonicalProductsPage() {
   const [items, setItems] = useState([]);
   const [total, setTotal] = useState(0);
   const [retailers, setRetailers] = useState([]);
+  const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   // Filter & Pagination States
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedBrand, setSelectedBrand] = useState('');
   const [selectedRetailer, setSelectedRetailer] = useState('');
   const [sortBy, setSortBy] = useState('updated_at');
   const [sortOrder, setSortOrder] = useState('desc');
@@ -21,7 +23,6 @@ export default function CanonicalProductsPage() {
 
   const navigate = useNavigate();
 
-  // Categories list
   const CATEGORIES = [
     'Bread & Bakery', 'Dairy & Eggs', 'Meat & Poultry', 'Fish & Seafood',
     'Fruit & Vegetables', 'Frozen Foods', 'Drinks & Beverages', 'Beer, Wine & Spirits',
@@ -29,6 +30,7 @@ export default function CanonicalProductsPage() {
     'Baby & Kids', 'Household & Cleaning', 'Personal Care & Beauty', 'Pet Supplies'
   ];
 
+  // Fetch list of retailers once
   const fetchRetailers = async () => {
     try {
       const res = await fetch(`${API_BASE_URL}/retailers`);
@@ -38,6 +40,30 @@ export default function CanonicalProductsPage() {
     }
   };
 
+  // Dynamically fetch brands based on selected category, retailer, and search term
+  const fetchBrands = async () => {
+    try {
+      const params = new URLSearchParams();
+      if (selectedCategory) params.append('category', selectedCategory);
+      if (selectedRetailer) params.append('retailer_code', selectedRetailer);
+      if (searchTerm.trim()) params.append('search', searchTerm.trim());
+
+      const res = await fetch(`${API_BASE_URL}/canonical-brands?${params.toString()}`);
+      if (res.ok) {
+        const brandList = await res.json();
+        setBrands(brandList);
+
+        // If the selected brand is no longer in the newly filtered brands list, reset it!
+        if (selectedBrand && !brandList.includes(selectedBrand)) {
+          setSelectedBrand('');
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load dynamic brands:', e);
+    }
+  };
+
+  // Fetch paginated canonical products
   const fetchProducts = async () => {
     setLoading(true);
     setError(null);
@@ -52,6 +78,7 @@ export default function CanonicalProductsPage() {
 
       if (searchTerm.trim()) params.append('search', searchTerm.trim());
       if (selectedCategory) params.append('category', selectedCategory);
+      if (selectedBrand) params.append('brand', selectedBrand);
       if (selectedRetailer) params.append('retailer_code', selectedRetailer);
 
       const res = await fetch(`${API_BASE_URL}/canonical-products?${params.toString()}`);
@@ -71,12 +98,16 @@ export default function CanonicalProductsPage() {
     fetchRetailers();
   }, []);
 
-  // Fetch when filters/page change
+  // Whenever category, retailer, or search term changes, update available brands!
+  useEffect(() => {
+    fetchBrands();
+  }, [selectedCategory, selectedRetailer, searchTerm]);
+
+  // Re-fetch products when filters, page, limit, or sort changes
   useEffect(() => {
     fetchProducts();
-  }, [page, limit, selectedCategory, selectedRetailer, sortBy, sortOrder]);
+  }, [page, limit, selectedCategory, selectedBrand, selectedRetailer, sortBy, sortOrder]);
 
-  // Handle Search submit / enter
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     setPage(1);
@@ -93,7 +124,7 @@ export default function CanonicalProductsPage() {
             <Layers style={{ color: '#2e7d32' }} /> Canonical Products Catalog
           </h1>
           <p style={{ opacity: 0.7, margin: '0.3rem 0 0 0', fontSize: '0.88rem' }}>
-            Server-side paginated master product catalog
+            Cascading filtered & paginated master product catalog
           </p>
         </div>
         <button onClick={fetchProducts} disabled={loading} className="outline" style={{ width: 'auto', padding: '0.4rem 0.8rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
@@ -102,7 +133,7 @@ export default function CanonicalProductsPage() {
       </header>
 
       {/* Filter Controls Bar */}
-      <form onSubmit={handleSearchSubmit} style={{ background: 'var(--pico-card-background-color)', padding: '1rem', borderRadius: '12px', marginBottom: '1.5rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', alignItems: 'center' }}>
+      <form onSubmit={handleSearchSubmit} style={{ background: 'var(--pico-card-background-color)', padding: '1rem', borderRadius: '12px', marginBottom: '1.5rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1rem', alignItems: 'center' }}>
         
         {/* Search Input */}
         <div style={{ position: 'relative' }}>
@@ -144,7 +175,23 @@ export default function CanonicalProductsPage() {
           </select>
         </div>
 
-        {/* Sort By */}
+        {/* Dynamic Cascading Brand Filter */}
+        <div>
+          <select
+            value={selectedBrand}
+            onChange={(e) => { setSelectedBrand(e.target.value); setPage(1); }}
+            style={{ margin: 0, fontSize: '0.88rem' }}
+          >
+            <option value="">
+              {selectedRetailer || selectedCategory ? `Brands in Selection (${brands.length})` : `All Brands (${brands.length})`}
+            </option>
+            {brands.map(b => (
+              <option key={b} value={b}>{b}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Sort By & Order */}
         <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
           <select
             value={sortBy}
@@ -167,6 +214,18 @@ export default function CanonicalProductsPage() {
             <ArrowUpDown size={16} />
           </button>
         </div>
+
+        {/* Clear Filters Button */}
+        {(searchTerm || selectedCategory || selectedBrand || selectedRetailer) && (
+          <button
+            type="button"
+            onClick={() => { setSearchTerm(''); setSelectedCategory(''); setSelectedBrand(''); setSelectedRetailer(''); setPage(1); }}
+            className="outline"
+            style={{ margin: 0, padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+          >
+            Clear Filters
+          </button>
+        )}
       </form>
 
       {/* Pagination & Count Header */}
