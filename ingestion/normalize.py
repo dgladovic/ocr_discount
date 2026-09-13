@@ -78,12 +78,25 @@ def normalize_brand(brand: str | None) -> str | None:
     if not brand or brand == "N/A":
         return None
     text = unicodedata.normalize("NFC", str(brand))
+    # 1. Unify typographic quotes so "Da komm’ ich her!" matches "Da komm' ich her!"
+    text = text.replace("’", "'").replace("`", "'")
     text = _TRADEMARK_SYMBOLS_RE.sub("", text)
     text = re.sub(r"\s+", " ", text).strip()
     text = _BRAND_LEGAL_SUFFIX_RE.sub("", text).strip(" .,-")
     if not text:
         return None
-    return " ".join(word.capitalize() for word in text.split())
+
+    # Helper: handles title casing and preserves tokens starting with digits (e.g. '3M', not '3m')
+    def _capitalize_part(part: str) -> str:
+        if re.match(r"^\d+[a-zA-Z]+$", part):
+            return part.upper()
+        return part.capitalize()
+
+    # 2. Capitalize words across both spaces AND hyphens (fixes 'S-BUDGET' -> 'S-Budget', 'Coca-Cola')
+    return " ".join(
+        "-".join(_capitalize_part(p) for p in word.split("-"))
+        for word in text.split()
+    )
 
 
 def clean_price(price_str: str | float | int | None) -> float | None:
