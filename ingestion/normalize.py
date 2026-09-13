@@ -25,6 +25,7 @@ _WEIGHT_UNITS = {"g": "g", "gramm": "g", "kg": "g"}       # kg normalizes to g (
 _VOLUME_UNITS = {"ml": "ml", "l": "ml", "liter": "ml"}    # l normalizes to ml (x1000)
 _COUNT_UNITS = {
     "stück": "pcs", "stk": "pcs", "pcs": "pcs", "pc": "pcs",
+    "er": "pcs",
     "waschladungen": "washes", "wl": "washes",
     "blatt": "sheets", "rollen": "rolls", "rolle": "rolls",
 }

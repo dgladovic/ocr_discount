@@ -103,8 +103,9 @@ def find_or_create_canonical(conn, store_product_id: str, offer: dict) -> str:
         cur.execute(
             """
             SELECT id FROM canonical_products
-            WHERE category = %s AND product_type = %s
-              AND brand IS NOT DISTINCT FROM %s
+            WHERE category = %s 
+              AND product_type = %s
+              AND LOWER(brand) IS NOT DISTINCT FROM LOWER(%s)
               AND unit_size IS NOT DISTINCT FROM %s
               AND unit_measurement IS NOT DISTINCT FROM %s
               AND fat_percent IS NOT DISTINCT FROM %s
