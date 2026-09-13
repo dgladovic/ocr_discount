@@ -7,8 +7,6 @@ from datetime import date
 
 router = APIRouter(tags=["Canonical Products"])
 
-today = date.today().isoformat()
-
 class ProductOverrideSchema(BaseModel):
     display_name: str | None = None
     category: str | None = None
@@ -253,6 +251,8 @@ def extract_flyer_info(cropped_image_path: str | None, pdf_file_path: str | None
 
 @router.get("/canonical-products/{canonical_id}/details")
 def get_canonical_product_details(canonical_id: str):
+    today = date.today().isoformat()
+
     can_query = """
         SELECT id, display_name, category, product_type, brand, unit_size, 
                unit_measurement, fat_percent, organic, image_url, is_manually_edited, updated_at
