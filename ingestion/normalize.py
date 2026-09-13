@@ -4,6 +4,7 @@ unit conversion -- the connector emits clean strings, this module turns
 them into typed, comparable values.
 """
 import re
+import unicodedata
 from datetime import datetime
 
 from ingestion.schemas import PRODUCT_TYPE_TO_CATEGORY_PREFIX
@@ -29,6 +30,17 @@ _COUNT_UNITS = {
 }
 _BASE_PRICE_UNIT_MAP = {"kg": "kg", "l": "l", "liter": "l", "100g": "100g", "100ml": "100g", "stk": "piece", "stück": "piece"}
 
+# Legal-entity suffixes that sometimes tag along on a brand string and would
+# otherwise fork an identical brand into two canonical products.
+_BRAND_LEGAL_SUFFIX_RE = re.compile(r"\b(gmbh|ag|kg|e\.?gen\.?|og|co\.?)\b\.?\s*$", re.IGNORECASE)
+_TRADEMARK_SYMBOLS_RE = re.compile(r"[®™©]")
+
+# Multipack notation Gemini sometimes transcribes verbatim, e.g. '6x0,5l',
+# '4 x 250 ml', '3x400g' -- must be resolved to a total size BEFORE the
+# generic single-unit regex below, or '6x0,5l' silently mis-parses as
+# (6.0, 'x'), an invalid/garbage unit_measurement.
+_MULTIPACK_RE = re.compile(r"(\d+)\s*x\s*(\d+(?:[.,]\d+)?)\s*([a-zäöü]+)", re.IGNORECASE)
+
 
 def slugify(text: str) -> str:
     text = str(text).lower().strip()
@@ -44,6 +56,33 @@ def strip_variant_noise(name: str) -> str:
     cleaned = _VARIANT_NOISE_RE.sub("", name)
     cleaned = re.sub(r"\s{2,}", " ", cleaned).strip(" ,-")
     return cleaned or name  # never return an empty string
+
+
+def normalize_brand(brand: str | None) -> str | None:
+    """
+    Collapses casing/whitespace/symbol variants of the same brand so
+    'ACTIV ENERGY' and 'Activ Energy' produce the identical stored string
+    and therefore match during canonical resolution, instead of silently
+    forking into two canonical products.
+
+    Trade-off: this title-cases everything, including brands that are
+    intentionally stylized in caps (e.g. a brand legitimately called
+    'NORMA'). That's accepted here because consistent matching matters more
+    than preserving stylization -- if a specific canonical product's
+    *display* casing needs to look a particular way, fix it via
+    product_overrides on that one row; it won't affect matching, since
+    matching happens on this normalized value computed at ingestion time,
+    not on the overridden display value.
+    """
+    if not brand or brand == "N/A":
+        return None
+    text = unicodedata.normalize("NFC", str(brand))
+    text = _TRADEMARK_SYMBOLS_RE.sub("", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    text = _BRAND_LEGAL_SUFFIX_RE.sub("", text).strip(" .,-")
+    if not text:
+        return None
+    return " ".join(word.capitalize() for word in text.split())
 
 
 def clean_price(price_str: str | float | int | None) -> float | None:
@@ -74,21 +113,50 @@ def clean_price(price_str: str | float | int | None) -> float | None:
             num_str = "".join(parts[:-1]) + "." + parts[-1]
 
     try:
-        return float(num_str)
+        return round(float(num_str), 2)
     except ValueError:
         return None
+
+
+def _normalize_single_unit(value: float, unit_raw: str) -> tuple[float, str]:
+    unit_raw = unit_raw.lower()
+    if unit_raw in _WEIGHT_UNITS:
+        return (round(value * 1000, 2), "g") if unit_raw == "kg" else (round(value, 2), "g")
+    if unit_raw in _VOLUME_UNITS:
+        return (round(value * 1000, 2), "ml") if unit_raw in ("l", "liter") else (round(value, 2), "ml")
+    if unit_raw in _COUNT_UNITS:
+        return round(value, 2), _COUNT_UNITS[unit_raw]
+    return round(value, 2), unit_raw  # unrecognized unit kept verbatim rather than dropped
 
 
 def parse_unit_size(size_str: str | None) -> tuple[float | None, str | None]:
     """
     Parses a transcribed size string into (numeric_value, normalized_unit).
-    Handles weight, volume, and count-based units uniformly:
-      '1 l' -> (1000.0, 'ml')      '500 g' -> (500.0, 'g')
-      '10 Stück' -> (10.0, 'pcs')  '3 Waschladungen' -> (3.0, 'washes')
+    Handles weight, volume, count-based units, AND multipack notation
+    uniformly:
+      '1 l' -> (1000.0, 'ml')          '500 g' -> (500.0, 'g')
+      '10 Stück' -> (10.0, 'pcs')      '6x0,5l' -> (3000.0, 'ml')  [total, not per-bottle]
+      '4 x 250 ml' -> (1000.0, 'ml')   '3 Waschladungen' -> (3.0, 'washes')
+
+    Rounds to 2 decimal places -- avoids two genuinely-identical sizes
+    silently failing to match in resolution due to binary float noise
+    (e.g. 330.00000000000006 vs 330.0) picked up during repeated parsing.
     """
     if not size_str or size_str == "N/A":
         return None, None
     s = str(size_str).lower().replace(",", ".").strip()
+
+    multipack_match = _MULTIPACK_RE.search(s)
+    if multipack_match:
+        count = int(multipack_match.group(1))
+        try:
+            per_item_value = float(multipack_match.group(2))
+        except ValueError:
+            return None, None
+        per_item_value, unit = _normalize_single_unit(per_item_value, multipack_match.group(3))
+        if unit in ("g", "ml"):  # total makes sense for weight/volume
+            return round(count * per_item_value, 2), unit
+        return per_item_value, unit  # counts/washes/etc: multipack notation doesn't apply the same way
 
     match = re.search(r"(\d+(?:\.\d+)?)\s*([a-zäöü]+)", s)
     if not match:
@@ -97,15 +165,7 @@ def parse_unit_size(size_str: str | None) -> tuple[float | None, str | None]:
         value = float(match.group(1))
     except ValueError:
         return None, None
-    unit_raw = match.group(2)
-
-    if unit_raw in _WEIGHT_UNITS:
-        return (value * 1000, "g") if unit_raw == "kg" else (value, "g")
-    if unit_raw in _VOLUME_UNITS:
-        return (value * 1000, "ml") if unit_raw in ("l", "liter") else (value, "ml")
-    if unit_raw in _COUNT_UNITS:
-        return value, _COUNT_UNITS[unit_raw]
-    return value, unit_raw  # unrecognized unit kept verbatim rather than dropped
+    return _normalize_single_unit(value, match.group(2))
 
 
 def parse_base_price(unit_price_str: str | None) -> tuple[float | None, str | None]:
@@ -144,13 +204,13 @@ def parse_percent(percent_str: str | float | int | None) -> float | None:
     if percent_str is None or percent_str == "N/A":
         return None
     if isinstance(percent_str, (int, float)):
-        return float(abs(percent_str))
+        return round(float(abs(percent_str)), 2)
     s = str(percent_str).replace(",", ".").strip()
     match = re.search(r"(\d+(?:\.\d+)?)", s)
     if not match:
         return None
     try:
-        return float(match.group(1))
+        return round(float(match.group(1)), 2)
     except ValueError:
         return None
 
@@ -218,7 +278,7 @@ def normalize_offer(raw_offer: dict) -> dict:
     return {
         **raw_offer,
         "product_name_clean": product_name_clean,
-        "brand": attrs.get("brand") if attrs.get("brand") != "N/A" else None,
+        "brand": normalize_brand(attrs.get("brand")),
         "unit_size": unit_size,
         "unit_measurement": unit_measurement,
         "fat_percent": fat_percent,

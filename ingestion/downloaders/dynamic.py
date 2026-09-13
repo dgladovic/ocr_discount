@@ -53,7 +53,12 @@ class BaseSeleniumDownloader(FlyerDownloader):
         }
         options.add_experimental_option("prefs", chrome_prefs)
         
-        service = Service(ChromeDriverManager().install())
+        if os.path.exists("/usr/bin/chromedriver"):
+            service = Service(executable_path="/usr/bin/chromedriver")
+            options.binary_location = "/usr/bin/chromium"
+        else:
+            service = Service(ChromeDriverManager().install())
+
         driver = webdriver.Chrome(service=service, options=options)
         driver.execute_cdp_cmd("Page.setDownloadBehavior", {
             "behavior": "allow",

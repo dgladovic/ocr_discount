@@ -146,9 +146,15 @@ def find_or_create_canonical(conn, store_product_id: str, offer: dict) -> str:
 def _refresh_canonical_fields(conn, canonical_id: str, offer: dict):
     """
     Refresh display_name/organic/image_url on an existing canonical product, skipping
-    any field a human has manually overridden. Overrides always win over
-    automated writes.
+    entirely if the product has been manually locked/edited by a human.
     """
+    # Whole-Product Lock Check: If manually edited, lock product completely from AI updates
+    with conn.cursor() as cur:
+        cur.execute("SELECT is_manually_edited FROM canonical_products WHERE id = %s", (canonical_id,))
+        row = cur.fetchone()
+        if row and row[0]:  # is_manually_edited is True!
+            return
+
     overridden = _get_overridden_fields(conn, canonical_id)
     updates, params = [], []
 

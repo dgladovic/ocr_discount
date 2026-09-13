@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RefreshCw } from 'lucide-react';
-import Sidebar from '../components/Sidebar';
+import Sidebar from './Sidebar';
 import IngestionStatusView from '../components/IngestionStatusView';
 import TableView from '../components/TableView';
 import CanonicalProductsPage from '../pages/CanonicalProductsPage'; // <--- Import here
@@ -87,6 +87,10 @@ export default function Dashboard() {
 
             {!loading && !error && activeTable.id !== 'ingestion-status' && (
               <TableView data={data} activeTableId={activeTable.id} onRowClick={handleRowClick} />
+            )}
+
+            {!loading && !error && activeTable.id === 'product-overrides' && (
+              <OverridesView />
             )}
           </>
         )}
