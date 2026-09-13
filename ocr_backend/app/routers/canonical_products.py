@@ -1,9 +1,8 @@
 import re
 import os
-import psycopg2
 from pydantic import BaseModel
 from fastapi import APIRouter, Query, HTTPException
-from app.database import fetch_query
+from app.database import fetch_query, get_db_cursor
 
 router = APIRouter(tags=["Canonical Products"])
 
@@ -41,31 +40,30 @@ def create_product_override(canonical_id: str, payload: ProductOverrideSchema):
         raise HTTPException(status_code=400, detail="No fields provided to override")
 
     try:
-        with psycopg2.connect(DB_DSN) as conn:
-            with conn.cursor() as cur:
-                # 1. Upsert into product_overrides table
-                for field, val in active_edits.items():
-                    cur.execute(
-                        """
-                        INSERT INTO product_overrides (canonical_id, field_name, override_value, edited_by, edited_at)
-                        VALUES (%s, %s, %s, %s, NOW())
-                        ON CONFLICT (canonical_id, field_name)
-                        DO UPDATE SET override_value = EXCLUDED.override_value,
-                                      edited_by = EXCLUDED.edited_by,
-                                      edited_at = NOW();
-                        """,
-                        (canonical_id, field, str(val), edited_by)
-                    )
-                
-                # 2. Update canonical_products table directly & lock product (is_manually_edited = true)
-                set_clauses = [f"{field} = %s" for field in active_edits.keys()]
-                set_clauses.append("is_manually_edited = true")
-                set_clauses.append("updated_at = NOW()")
-                
-                update_sql = f"UPDATE canonical_products SET {', '.join(set_clauses)} WHERE id = %s;"
-                params = list(active_edits.values()) + [canonical_id]
-                cur.execute(update_sql, tuple(params))
-                conn.commit()
+        # Use connection pool context manager with commit=True
+        with get_db_cursor(commit=True) as cur:
+            # 1. Upsert into product_overrides table
+            for field, val in active_edits.items():
+                cur.execute(
+                    """
+                    INSERT INTO product_overrides (canonical_id, field_name, override_value, edited_by, edited_at)
+                    VALUES (%s, %s, %s, %s, NOW())
+                    ON CONFLICT (canonical_id, field_name)
+                    DO UPDATE SET override_value = EXCLUDED.override_value,
+                                  edited_by = EXCLUDED.edited_by,
+                                  edited_at = NOW();
+                    """,
+                    (canonical_id, field, str(val), edited_by)
+                )
+            
+            # 2. Update canonical_products table directly & lock product (is_manually_edited = true)
+            set_clauses = [f"{field} = %s" for field in active_edits.keys()]
+            set_clauses.append("is_manually_edited = true")
+            set_clauses.append("updated_at = NOW()")
+            
+            update_sql = f"UPDATE canonical_products SET {', '.join(set_clauses)} WHERE id = %s;"
+            params = list(active_edits.values()) + [canonical_id]
+            cur.execute(update_sql, tuple(params))
 
         return {"status": "success", "message": f"Updated {len(active_edits)} field(s) for canonical product {canonical_id}"}
     except Exception as e:
@@ -76,17 +74,15 @@ def create_product_override(canonical_id: str, payload: ProductOverrideSchema):
 def revert_product_override(canonical_id: str):
     """Delete all overrides for a canonical product and unlock it for AI pipeline management."""
     try:
-        with psycopg2.connect(DB_DSN) as conn:
-            with conn.cursor() as cur:
-                # 1. Delete override records
-                cur.execute("DELETE FROM product_overrides WHERE canonical_id = %s;", (canonical_id,))
-                
-                # 2. Unlock product (is_manually_edited = false)
-                cur.execute(
-                    "UPDATE canonical_products SET is_manually_edited = false, updated_at = NOW() WHERE id = %s;",
-                    (canonical_id,)
-                )
-                conn.commit()
+        with get_db_cursor(commit=True) as cur:
+            # 1. Delete override records
+            cur.execute("DELETE FROM product_overrides WHERE canonical_id = %s;", (canonical_id,))
+            
+            # 2. Unlock product (is_manually_edited = false)
+            cur.execute(
+                "UPDATE canonical_products SET is_manually_edited = false, updated_at = NOW() WHERE id = %s;",
+                (canonical_id,)
+            )
 
         return {"status": "success", "message": f"Reverted overrides for canonical product {canonical_id}. AI management unlocked."}
     except Exception as e:

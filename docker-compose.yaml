@@ -38,6 +38,8 @@ services:
       # Per retailer, once its flyer URL is confirmed (see ingestion/downloaders/config.py):
       # - HOFER_FLYER_URL=...
     volumes:
+      - ./ingestion:/app/ingestion   # <--- ADD THIS LINE
+      - ./db:/app/db                 # <--- ADD THIS LINE
       - ./downloads:/app/downloads
       - ./extracted_json:/app/extracted_json
       - ./cropped_images:/app/cropped_images
