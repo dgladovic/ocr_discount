@@ -1,5 +1,9 @@
 CREATE EXTENSION IF NOT EXISTS pgcrypto;   -- for gen_random_uuid()
-CREATE EXTENSION IF NOT EXISTS vector;      -- pgvector, used from phase 2 onward
+CREATE EXTENSION IF NOT EXISTS vector;     -- pgvector, used from phase 2 onward
+
+-- =========================================================================
+-- 1. RETAILERS & SOURCE DOCUMENTS
+-- =========================================================================
 
 CREATE TABLE IF NOT EXISTS retailers (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -8,11 +12,10 @@ CREATE TABLE IF NOT EXISTS retailers (
 );
 
 -- One row per PDF flyer actually ingested. Lets you trace any price back to
--- the exact file it came from, independent of store_products (which gets
--- overwritten weekly and only ever reflects the latest extraction).
+-- the exact file it came from.
 CREATE TABLE IF NOT EXISTS source_documents (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    retailer_id UUID NOT NULL REFERENCES retailers(id),
+    retailer_id UUID NOT NULL REFERENCES retailers(id) ON DELETE CASCADE,
     week_start DATE NOT NULL,
     week_end DATE NOT NULL,
     file_path TEXT NOT NULL,          -- path inside the shared downloads/ volume
@@ -21,9 +24,13 @@ CREATE TABLE IF NOT EXISTS source_documents (
     UNIQUE (retailer_id, week_end)
 );
 
+-- =========================================================================
+-- 2. PRODUCTS & CANONICAL MASTER CATALOG
+-- =========================================================================
+
 CREATE TABLE IF NOT EXISTS store_products (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    retailer_id UUID NOT NULL REFERENCES retailers(id),
+    retailer_id UUID NOT NULL REFERENCES retailers(id) ON DELETE CASCADE,
     store_product_key TEXT NOT NULL,
     product_name_raw TEXT NOT NULL,
     category TEXT NOT NULL,
@@ -55,17 +62,22 @@ CREATE TABLE IF NOT EXISTS canonical_products (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- Joins raw store products to canonical master products
 CREATE TABLE IF NOT EXISTS store_product_links (
-    store_product_id UUID PRIMARY KEY REFERENCES store_products(id),
-    canonical_id UUID NOT NULL REFERENCES canonical_products(id),
+    store_product_id UUID PRIMARY KEY REFERENCES store_products(id) ON DELETE CASCADE,
+    canonical_id UUID NOT NULL REFERENCES canonical_products(id) ON DELETE CASCADE,
     confidence NUMERIC NOT NULL DEFAULT 1.0,
     match_method TEXT NOT NULL DEFAULT 'exact'
 );
 
+-- =========================================================================
+-- 3. HISTORICAL PRICE OFFERS & ANNOUNCEMENTS
+-- =========================================================================
+
 CREATE TABLE IF NOT EXISTS price_offers (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    store_product_id UUID NOT NULL REFERENCES store_products(id),
-    source_document_id UUID REFERENCES source_documents(id),
+    store_product_id UUID NOT NULL REFERENCES store_products(id) ON DELETE CASCADE,
+    source_document_id UUID REFERENCES source_documents(id) ON DELETE SET NULL,
     week_start DATE NOT NULL,
     week_end DATE NOT NULL,
     current_price NUMERIC NOT NULL,
@@ -76,8 +88,8 @@ CREATE TABLE IF NOT EXISTS price_offers (
     multibuy_free_qty INT,
     base_price NUMERIC,                -- Grundpreis: legally required per-unit price
     base_price_unit TEXT,              -- 'kg' | 'l' | '100g' | 'piece'
-    base_price_source TEXT NOT NULL DEFAULT 'computed',  -- 'printed' | 'computed' -- printed always wins when both exist
-    cropped_image_path TEXT,           -- this week's exact product crop, for visual debugging of bad extractions
+    base_price_source TEXT NOT NULL DEFAULT 'computed',  -- 'printed' | 'computed'
+    cropped_image_path TEXT,           -- this week's exact product crop
     availability_date_range TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     UNIQUE (store_product_id, week_start)
@@ -85,7 +97,7 @@ CREATE TABLE IF NOT EXISTS price_offers (
 
 CREATE TABLE IF NOT EXISTS category_announcements (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    retailer_id UUID NOT NULL REFERENCES retailers(id),
+    retailer_id UUID NOT NULL REFERENCES retailers(id) ON DELETE CASCADE,
     week_start DATE NOT NULL,
     week_end DATE NOT NULL,
     announcement_type TEXT,
@@ -94,6 +106,10 @@ CREATE TABLE IF NOT EXISTS category_announcements (
     details TEXT,
     availability_date_range TEXT
 );
+
+-- =========================================================================
+-- 4. SYSTEM AUDITING & HUMAN OVERRIDES
+-- =========================================================================
 
 CREATE TABLE IF NOT EXISTS ingestion_logs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -108,13 +124,17 @@ CREATE TABLE IF NOT EXISTS ingestion_logs (
 
 CREATE TABLE IF NOT EXISTS product_overrides (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    canonical_id UUID NOT NULL REFERENCES canonical_products(id),
+    canonical_id UUID NOT NULL REFERENCES canonical_products(id) ON DELETE CASCADE,
     field_name TEXT NOT NULL,
     override_value TEXT NOT NULL,
     edited_by TEXT NOT NULL,
     edited_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     UNIQUE (canonical_id, field_name)
 );
+
+-- =========================================================================
+-- 5. USERS & WATCHLIST
+-- =========================================================================
 
 CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -123,24 +143,47 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS watchlist_items (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL REFERENCES users(id),
-    canonical_id UUID REFERENCES canonical_products(id),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    canonical_id UUID NOT NULL REFERENCES canonical_products(id) ON DELETE CASCADE,
     match_mode TEXT NOT NULL DEFAULT 'product',
     group_filter JSONB,
     threshold_price NUMERIC,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    CONSTRAINT uq_watchlist_user_canonical UNIQUE (user_id, canonical_id)
 );
+
+-- =========================================================================
+-- 6. PERFORMANCE INDEXES
+-- =========================================================================
 
 CREATE INDEX IF NOT EXISTS idx_store_products_type ON store_products (category, product_type);
 CREATE INDEX IF NOT EXISTS idx_canonical_type ON canonical_products (category, product_type, unit_size, unit_measurement, fat_percent);
+CREATE INDEX IF NOT EXISTS idx_canonical_brand_category ON canonical_products (brand, category);
+CREATE INDEX IF NOT EXISTS idx_store_product_links_canonical ON store_product_links (canonical_id);
+
 CREATE INDEX IF NOT EXISTS idx_price_offers_week ON price_offers (store_product_id, week_start DESC);
+CREATE INDEX IF NOT EXISTS idx_price_offers_active ON price_offers (week_end DESC);
 CREATE INDEX IF NOT EXISTS idx_price_offers_source_doc ON price_offers (source_document_id);
 CREATE INDEX IF NOT EXISTS idx_source_documents_retailer_week ON source_documents (retailer_id, week_end DESC);
 
--- Seed retailers. Interspar is its own retailer_id even though it's
--- operationally related to Spar -- different flyer, different prices,
--- treated identically to every other retailer in the pipeline.
+CREATE INDEX IF NOT EXISTS idx_watchlist_user ON watchlist_items (user_id);
+CREATE INDEX IF NOT EXISTS idx_watchlist_canonical ON watchlist_items (canonical_id);
+
+-- =========================================================================
+-- 7. INITIAL SEED DATA
+-- =========================================================================
+
+-- Seed Austrian Supermarket Retailers
 INSERT INTO retailers (name, code) VALUES
-    ('Billa', 'billa'), ('Spar', 'spar'), ('Interspar', 'interspar'),
-    ('Hofer', 'hofer'), ('Lidl', 'lidl'), ('Penny', 'penny')
+    ('Billa', 'billa'),
+    ('Spar', 'spar'),
+    ('Interspar', 'interspar'),
+    ('Hofer', 'hofer'),
+    ('Lidl', 'lidl'),
+    ('Penny', 'penny')
 ON CONFLICT (code) DO NOTHING;
+
+-- Seed Primary Default Admin User
+INSERT INTO users (id, email) VALUES
+    ('00000000-0000-0000-0000-000000000001', 'admin@retailoffers.com')
+ON CONFLICT (email) DO NOTHING;

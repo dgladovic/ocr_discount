@@ -7,6 +7,7 @@ import CanonicalProductsPage from './pages/CanonicalProductsPage';
 import CanonicalDetailPage from './pages/CanonicalDetailPage';
 import StoreProductDetailPage from './components/StoreProductDetailPage';
 import OverridesView from './components/OverridesView';
+import WatchlistPage from './pages/WatchlistPage';
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
         <main className="main-content" style={{ flexGrow: 1, padding: '1.5rem', overflowY: 'auto' }}>
           <Routes>
             <Route path="/" element={<Navigate to="/active-offers" replace />} />
+            <Route path="/watchlist" element={<WatchlistPage />} />
             <Route path="/active-offers" element={<ActiveOffersPage />} />
             <Route path="/ingestion-status" element={<IngestionMonitoringPage />} />
             <Route path="/catalog" element={<CanonicalProductsPage />} />

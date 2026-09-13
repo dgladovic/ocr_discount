@@ -1,9 +1,10 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Flame, Activity, Layers, Edit3, ShoppingBag } from 'lucide-react';
+import { Flame, Activity, Layers, Edit3, ShoppingBag, BookmarkCheck } from 'lucide-react';
 
 export default function Sidebar() {
   const navItems = [
+    { to: '/watchlist', label: 'My Watchlist', icon: BookmarkCheck },
     { to: '/active-offers', label: 'Active Deals', icon: Flame },
     { to: '/catalog', label: 'Canonical Catalog', icon: Layers },
     { to: '/ingestion-status', label: 'Flyer Ingestion Health', icon: Activity },

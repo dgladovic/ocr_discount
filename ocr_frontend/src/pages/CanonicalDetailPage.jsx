@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Edit3, RotateCcw } from 'lucide-react';
+import { ArrowLeft, Edit3, RotateCcw, Bookmark, BookmarkCheck } from 'lucide-react';
 
 import { API_BASE_URL } from '../constants/tables';
 import ProductHero from '../components/canonical/ProductHero';
@@ -19,6 +19,10 @@ export default function CanonicalDetailPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
+  // Watchlist state
+  const [isWatched, setIsWatched] = useState(false);
+  const [watchLoading, setWatchLoading] = useState(false);
+
   const fetchDetails = async () => {
     setLoading(true);
     try {
@@ -33,9 +37,43 @@ export default function CanonicalDetailPage() {
     }
   };
 
+  // Check if this canonical item is currently on the user's watchlist
+  const checkWatchlistStatus = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/watchlist`);
+      if (res.ok) {
+        const data = await res.json();
+        const allItems = [...(data.on_sale || []), ...(data.no_deals || [])];
+        const exists = allItems.some((item) => item.canonical_id === id);
+        setIsWatched(exists);
+      }
+    } catch (e) {
+      console.error('Failed to check watchlist status:', e);
+    }
+  };
+
   useEffect(() => {
     fetchDetails();
+    checkWatchlistStatus();
   }, [id]);
+
+  // Toggle Watch / Bookmark with optimistic UI update and error rollback
+  const handleToggleWatch = async () => {
+    const nextState = !isWatched;
+    setIsWatched(nextState);
+    setWatchLoading(true);
+
+    try {
+      const method = nextState ? 'POST' : 'DELETE';
+      const res = await fetch(`${API_BASE_URL}/watchlist/${id}`, { method });
+      if (!res.ok) throw new Error(`Status ${res.status}: Failed to update watchlist`);
+    } catch (err) {
+      setIsWatched(!nextState); // Rollback on failure
+      alert(`Watchlist Error: ${err.message}`);
+    } finally {
+      setWatchLoading(false);
+    }
+  };
 
   const handleSaveOverride = async (payload) => {
     setSubmitting(true);
@@ -86,21 +124,44 @@ export default function CanonicalDetailPage() {
   return (
     <div className="page-container" style={{ maxWidth: '960px', margin: '0 auto', padding: '1rem' }}>
       {/* Top Navigation & Actions Bar */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.8rem' }}>
         <button onClick={() => navigate(-1)} className="outline" style={{ padding: '0.35rem 0.75rem', margin: 0 }}>
           <ArrowLeft size={16} style={{ verticalAlign: 'middle', marginRight: '4px' }} /> Back
         </button>
 
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <button onClick={() => setIsEditing(true)} className="outline" style={{ padding: '0.35rem 0.75rem', margin: 0 }}>
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          {/* Watchlist Toggle Button */}
+          <button
+            onClick={handleToggleWatch}
+            disabled={watchLoading}
+            className="outline"
+            style={{
+              padding: '0.35rem 0.75rem',
+              margin: 0,
+              color: isWatched ? '#4ade80' : 'inherit',
+              borderColor: isWatched ? '#4ade80' : 'var(--pico-border-color)',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px',
+              fontSize: '0.85rem'
+            }}
+          >
+            {isWatched ? <BookmarkCheck size={15} /> : <Bookmark size={15} />}
+            {isWatched ? 'Watched' : 'Watch Product'}
+          </button>
+
+          {/* Edit Product Override */}
+          <button onClick={() => setIsEditing(true)} className="outline" style={{ padding: '0.35rem 0.75rem', margin: 0, fontSize: '0.85rem' }}>
             <Edit3 size={14} style={{ verticalAlign: 'middle', marginRight: '4px' }} /> Edit
           </button>
+
+          {/* Revert AI Lock if edited */}
           {canonical.is_manually_edited && (
             <button
               onClick={handleRevertOverride}
               disabled={submitting}
               className="outline"
-              style={{ padding: '0.35rem 0.75rem', margin: 0, borderColor: '#f87171', color: '#f87171' }}
+              style={{ padding: '0.35rem 0.75rem', margin: 0, borderColor: '#f87171', color: '#f87171', fontSize: '0.85rem' }}
             >
               <RotateCcw size={14} style={{ verticalAlign: 'middle', marginRight: '4px' }} /> Reset to AI
             </button>
@@ -108,13 +169,13 @@ export default function CanonicalDetailPage() {
         </div>
       </div>
 
-      {/* Modular Sections */}
+      {/* Modular Product Sections */}
       <ProductHero canonical={canonical} />
       <ActiveOffersSection activeOffers={activeOffers} />
       <LinkedStoreProducts priceHistory={priceHistory} />
       <PriceHistoryTable priceHistory={priceHistory} />
 
-      {/* Modal Dialog */}
+      {/* Override Modal */}
       {isEditing && (
         <EditOverrideModal
           canonical={canonical}

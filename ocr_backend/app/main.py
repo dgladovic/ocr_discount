@@ -5,7 +5,8 @@ from fastapi.staticfiles import StaticFiles
 
 from app.routers import (
     health, retailers, store_products, canonical_products, 
-    price_offers, ingestion, announcements, overrides, users
+    price_offers, ingestion, announcements, overrides, users,
+    watchlist
 )
 
 app = FastAPI(
@@ -39,3 +40,4 @@ app.include_router(ingestion.router)
 app.include_router(announcements.router)
 app.include_router(overrides.router)
 app.include_router(users.router)
+app.include_router(watchlist.router)
