@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Edit3, RotateCcw, Bookmark, BookmarkCheck } from 'lucide-react';
+import { 
+  ArrowLeft, Edit3, RotateCcw, Bookmark, BookmarkCheck, Trash2 
+} from 'lucide-react';
 
 import { API_BASE_URL } from '../constants/tables';
 import ProductHero from '../components/canonical/ProductHero';
@@ -18,6 +20,7 @@ export default function CanonicalDetailPage() {
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   // Watchlist state
   const [isWatched, setIsWatched] = useState(false);
@@ -109,6 +112,32 @@ export default function CanonicalDetailPage() {
     }
   };
 
+  // Permanently delete canonical product
+  const handleDeleteProduct = async () => {
+    const confirmed = window.confirm(
+      `Are you sure you want to permanently delete "${canonical.display_name}"?\n\nAll linked store products will be unlinked and this product will be removed from the catalog.`
+    );
+    if (!confirmed) return;
+
+    setDeleting(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/canonical-products/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        throw new Error(errJson.detail || `HTTP ${res.status}: Failed to delete product`);
+      }
+
+      // Navigate back to the catalog view
+      navigate('/catalog');
+    } catch (err) {
+      alert(`Delete Error: ${err.message}`);
+      setDeleting(false);
+    }
+  };
+
   if (loading) return <div className="page-container"><p>Loading details...</p></div>;
   if (error) return (
     <div className="page-container">
@@ -129,11 +158,11 @@ export default function CanonicalDetailPage() {
           <ArrowLeft size={16} style={{ verticalAlign: 'middle', marginRight: '4px' }} /> Back
         </button>
 
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
           {/* Watchlist Toggle Button */}
           <button
             onClick={handleToggleWatch}
-            disabled={watchLoading}
+            disabled={watchLoading || deleting}
             className="outline"
             style={{
               padding: '0.35rem 0.75rem',
@@ -151,7 +180,12 @@ export default function CanonicalDetailPage() {
           </button>
 
           {/* Edit Product Override */}
-          <button onClick={() => setIsEditing(true)} className="outline" style={{ padding: '0.35rem 0.75rem', margin: 0, fontSize: '0.85rem' }}>
+          <button 
+            onClick={() => setIsEditing(true)} 
+            disabled={deleting}
+            className="outline" 
+            style={{ padding: '0.35rem 0.75rem', margin: 0, fontSize: '0.85rem' }}
+          >
             <Edit3 size={14} style={{ verticalAlign: 'middle', marginRight: '4px' }} /> Edit
           </button>
 
@@ -159,13 +193,34 @@ export default function CanonicalDetailPage() {
           {canonical.is_manually_edited && (
             <button
               onClick={handleRevertOverride}
-              disabled={submitting}
+              disabled={submitting || deleting}
               className="outline"
               style={{ padding: '0.35rem 0.75rem', margin: 0, borderColor: '#f87171', color: '#f87171', fontSize: '0.85rem' }}
             >
               <RotateCcw size={14} style={{ verticalAlign: 'middle', marginRight: '4px' }} /> Reset to AI
             </button>
           )}
+
+          {/* Permanent Delete Button */}
+          <button
+            onClick={handleDeleteProduct}
+            disabled={deleting}
+            className="outline"
+            title="Permanently delete this canonical product"
+            style={{ 
+              padding: '0.35rem 0.75rem', 
+              margin: 0, 
+              borderColor: '#f87171', 
+              color: '#f87171', 
+              fontSize: '0.85rem',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px'
+            }}
+          >
+            <Trash2 size={14} />
+            {deleting ? 'Deleting...' : 'Delete'}
+          </button>
         </div>
       </div>
 

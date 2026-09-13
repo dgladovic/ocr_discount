@@ -3,8 +3,11 @@ import os
 from pydantic import BaseModel
 from fastapi import APIRouter, Query, HTTPException
 from app.database import fetch_query, get_db_cursor
+from datetime import date
 
 router = APIRouter(tags=["Canonical Products"])
+
+today = date.today().isoformat()
 
 class ProductOverrideSchema(BaseModel):
     display_name: str | None = None
@@ -95,24 +98,24 @@ def get_canonical_brands(
     search: str | None = None
 ):
     """
-    Fetch distinct brand names dynamically filtered by category, 
-    retailer code, or search term for cascading filter dropdowns.
+    Fetch distinct brand names case-insensitively and cleanly sorted.
     """
-    where_clauses = ["cp.brand IS NOT NULL", "cp.brand != 'N/A'", "cp.brand != ''"]
+    where_clauses = [
+        "cp.brand IS NOT NULL", 
+        "cp.brand != 'N/A'", 
+        "cp.brand != ''",
+    ]
     params = []
 
-    # Filter available brands by Category
     if category and category.strip():
         where_clauses.append("cp.category = %s")
         params.append(category.strip())
 
-    # Filter available brands by Search Term
     if search and search.strip():
         where_clauses.append("(cp.display_name ILIKE %s OR cp.brand ILIKE %s)")
         search_param = f"%{search.strip()}%"
         params.extend([search_param, search_param])
 
-    # Filter available brands by Retailer
     if retailer_code and retailer_code.strip():
         where_clauses.append("""
             EXISTS (
@@ -125,11 +128,19 @@ def get_canonical_brands(
         params.append(retailer_code.strip().lower())
 
     where_sql = " WHERE " + " AND ".join(where_clauses)
+
+    # Use a subquery with DISTINCT ON (LOWER(TRIM(brand))) to guarantee zero duplicate casings
     query = f"""
-        SELECT DISTINCT cp.brand 
-        FROM canonical_products cp
-        {where_sql}
-        ORDER BY cp.brand ASC;
+        WITH unique_brands AS (
+            SELECT DISTINCT ON (LOWER(TRIM(cp.brand))) 
+                cp.brand
+            FROM canonical_products cp
+            {where_sql}
+            ORDER BY LOWER(TRIM(cp.brand)), cp.updated_at DESC
+        )
+        SELECT brand 
+        FROM unique_brands 
+        ORDER BY brand ASC;
     """
     rows = fetch_query(query, tuple(params))
     return [r["brand"] for r in rows if r.get("brand")]
@@ -299,11 +310,38 @@ def get_canonical_product_details(canonical_id: str):
     active_offers = {}
     for offer in history:
         rcode = offer["retailer_code"]
-        if rcode not in active_offers:
-            active_offers[rcode] = offer
+        if str(offer.get("week_end")) >= today:
+            if rcode not in active_offers:
+                active_offers[rcode] = offer
 
     return {
         "canonical": canonical,
         "active_offers": list(active_offers.values()),
         "price_history": history
     }
+    
+@router.delete("/canonical-products/{canonical_id}")
+def delete_canonical_product(canonical_id: str):
+    """
+    Permanently deletes a canonical product and cleanly unlinks 
+    any associated store products, overrides, and watchlist entries.
+    """
+    with get_db_cursor(commit=True) as cur:
+        # 1. Check if the product exists
+        cur.execute("SELECT id, display_name FROM canonical_products WHERE id = %s;", (canonical_id,))
+        prod = cur.fetchone()
+        if not prod:
+            raise HTTPException(status_code=404, detail="Canonical product not found")
+
+        # 2. Explicitly clean up all foreign key references
+        cur.execute("DELETE FROM store_product_links WHERE canonical_id = %s;", (canonical_id,))
+        cur.execute("DELETE FROM product_overrides WHERE canonical_id = %s;", (canonical_id,))
+        cur.execute("DELETE FROM watchlist_items WHERE canonical_id = %s;", (canonical_id,))
+
+        # 3. Delete the canonical product
+        cur.execute("DELETE FROM canonical_products WHERE id = %s;", (canonical_id,))
+
+        return {
+            "status": "success", 
+            "message": f"Canonical product '{prod['display_name']}' successfully deleted."
+        }
