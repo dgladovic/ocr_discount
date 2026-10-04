@@ -26,8 +26,8 @@ COPY db/ ./db/
 COPY ingestion/normalize.py ingestion/load_to_db.py ./
 COPY ingestion/scheduler_entry.py ./ingestion/scheduler_entry.py
 
-# downloads/, extracted_json/, cropped_images/ are mounted volumes -- see docker-compose.yml
-RUN mkdir -p downloads extracted_json cropped_images
+# Ensure shared volume directories exist
+RUN mkdir -p downloads extracted_json cropped_images spar_scraped_data billa_scraped_data
 
 # Run using the -m flag so Python correctly resolves 'from ingestion.xyz import ...'
 CMD ["python", "-m", "ingestion.scheduler_entry"]

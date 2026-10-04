@@ -1,8 +1,6 @@
 """
 Phase 1 database layer: plain psycopg2, deterministic exact-match
-cross-store resolution (no embeddings / LLM matching yet), and
-override-aware writes to canonical_products so manual edits never
-get silently clobbered by the next ingestion run.
+cross-store resolution with image priority handling.
 """
 import os
 import psycopg2
@@ -26,7 +24,7 @@ def get_conn():
 
 def get_retailer_id(conn, retailer_code: str) -> str:
     with conn.cursor() as cur:
-        cur.execute("SELECT id FROM retailers WHERE code = %s", (retailer_code,))
+        cur.execute("SELECT id FROM retailers WHERE LOWER(code) = LOWER(%s)", (retailer_code.strip(),))
         row = cur.fetchone()
         if not row:
             raise ValueError(f"Unknown retailer code: {retailer_code}")
@@ -35,7 +33,6 @@ def get_retailer_id(conn, retailer_code: str) -> str:
 
 def get_or_create_source_document(conn, retailer_id: str, week_start: str, week_end: str,
                                    file_path: str, page_count: int | None = None) -> str:
-    """One row per flyer actually ingested -- what price_offers traces back to for debugging."""
     with conn.cursor() as cur:
         cur.execute(
             """
@@ -51,13 +48,34 @@ def get_or_create_source_document(conn, retailer_id: str, week_start: str, week_
         return cur.fetchone()[0]
 
 
+def is_studio_image(path: str | None) -> bool:
+    """Returns True if path is a clean web studio photo rather than a flyer crop."""
+    if not path:
+        return False
+    p = path.lower()
+    return "web" in p or p.startswith("http")
+
+
 def upsert_store_product(conn, retailer_id: str, offer: dict) -> str:
-    """
-    Insert or refresh the per-store product identity. Stable across weeks for
-    the same store_product_key (name+size slug -- every retailer now goes
-    through the same PDF extraction path, so there's one key strategy).
-    """
+    image_path = offer.get("imageUrl") or offer.get("image_url") or offer.get("cropped_image_path")
+    brand = offer.get("brand")
+    if brand and str(brand).strip().upper() in ("N/A", "NONE", ""):
+        brand = None
+
     with conn.cursor() as cur:
+        # Check existing store product image to prevent overwriting studio photo with flyer crop
+        cur.execute(
+            "SELECT id, image_url FROM store_products WHERE retailer_id = %s AND store_product_key = %s;",
+            (retailer_id, offer["store_product_key"])
+        )
+        existing = cur.fetchone()
+        
+        final_image = image_path
+        if existing and existing[1]:
+            # Keep clean web studio photo if incoming is just a flyer crop
+            if is_studio_image(existing[1]) and not is_studio_image(image_path):
+                final_image = existing[1]
+
         cur.execute(
             """
             INSERT INTO store_products
@@ -77,9 +95,9 @@ def upsert_store_product(conn, retailer_id: str, offer: dict) -> str:
             """,
             (
                 retailer_id, offer["store_product_key"], offer["product_name_clean"],
-                offer["category"], offer["productType"], offer.get("brand"),
+                offer["category"], offer["productType"], brand,
                 offer.get("unit_size"), offer.get("unit_measurement"), offer.get("fat_percent"),
-                offer.get("organic"), offer.get("imageUrl"),
+                offer.get("organic"), final_image,
             ),
         )
         return cur.fetchone()[0]
@@ -91,36 +109,89 @@ def _get_overridden_fields(conn, canonical_id: str) -> set[str]:
         return {row[0] for row in cur.fetchall()}
 
 
-def find_or_create_canonical(conn, store_product_id: str, offer: dict) -> str:
-    """
-    Phase 1 resolution: deterministic exact match on
-    (category, product_type, brand, unit_size, unit_measurement, fat_percent).
-    Under-merges rather than over-merges -- safer failure mode to ship with.
-    Embedding/LLM matching (phase 2+) only ever *improves* the match rate;
-    this function's signature and the store_product_links table don't change.
-    """
+def find_canonical_by_attributes(conn, category: str, product_type: str, brand: str | None,
+                                unit_size: float | None, unit_measurement: str | None,
+                                fat_percent: float | None) -> dict | None:
+    """Used by crop_images.py to check if a usable image already exists on disk."""
     with conn.cursor() as cur:
         cur.execute(
             """
-            SELECT id FROM canonical_products
-            WHERE category = %s 
-              AND product_type = %s
-              AND LOWER(brand) IS NOT DISTINCT FROM LOWER(%s)
+            SELECT id, image_url, is_manually_edited 
+            FROM canonical_products
+            WHERE category = %s AND product_type = %s
+              AND NULLIF(LOWER(TRIM(brand)), '') IS NOT DISTINCT FROM NULLIF(LOWER(TRIM(%s)), '')
               AND unit_size IS NOT DISTINCT FROM %s
-              AND unit_measurement IS NOT DISTINCT FROM %s
+              AND NULLIF(LOWER(TRIM(unit_measurement)), '') IS NOT DISTINCT FROM NULLIF(LOWER(TRIM(%s)), '')
               AND fat_percent IS NOT DISTINCT FROM %s
-            LIMIT 1
+            ORDER BY is_manually_edited DESC, updated_at DESC
+            LIMIT 1;
             """,
-            (offer["category"], offer["productType"], offer.get("brand"),
-             offer.get("unit_size"), offer.get("unit_measurement"), offer.get("fat_percent")),
+            (category, product_type, brand, unit_size, unit_measurement, fat_percent)
         )
+        row = cur.fetchone()
+        if row:
+            return {"id": row[0], "image_url": row[1], "is_manually_edited": row[2]}
+        return None
+
+
+def find_or_create_canonical(conn, store_product_id: str, offer: dict) -> str:
+    brand = offer.get("brand")
+    if brand and str(brand).strip().upper() in ("N/A", "NONE", ""):
+        brand = None
+
+    unit_size = offer.get("unit_size")
+    product_name = offer["product_name_clean"]
+
+    with conn.cursor() as cur:
+        # 1. Check existing manual links
+        cur.execute("""
+            SELECT canonical_id, match_method 
+            FROM store_product_links 
+            WHERE store_product_id = %s;
+        """, (store_product_id,))
+        existing_link = cur.fetchone()
+        if existing_link and existing_link[1] in ('manual_merge', 'manual_correction', 'manual'):
+            return existing_link[0]
+
+        # 2. MATCHING LOGIC (Protects against NULL black hole):
+        # Only match by attribute tuple if BOTH brand and unit_size are explicitly known.
+        # If either is NULL, require matching on the exact product name!
+        if brand is not None and unit_size is not None:
+            query = """
+                SELECT id FROM canonical_products
+                WHERE category = %s 
+                  AND product_type = %s
+                  AND NULLIF(LOWER(TRIM(brand)), '') IS NOT DISTINCT FROM NULLIF(LOWER(TRIM(%s)), '')
+                  AND unit_size IS NOT DISTINCT FROM %s
+                  AND NULLIF(LOWER(TRIM(unit_measurement)), '') IS NOT DISTINCT FROM NULLIF(LOWER(TRIM(%s)), '')
+                  AND fat_percent IS NOT DISTINCT FROM %s
+                ORDER BY is_manually_edited DESC, updated_at DESC
+                LIMIT 1;
+            """
+            params = (
+                offer["category"], offer["productType"], brand,
+                unit_size, offer.get("unit_measurement"), offer.get("fat_percent")
+            )
+        else:
+            # Fallback for unbranded or un-sized items: REQUIRE EXACT NAME MATCH
+            query = """
+                SELECT id FROM canonical_products
+                WHERE category = %s 
+                  AND product_type = %s
+                  AND LOWER(TRIM(display_name)) = LOWER(TRIM(%s))
+                ORDER BY is_manually_edited DESC, updated_at DESC
+                LIMIT 1;
+            """
+            params = (offer["category"], offer["productType"], product_name)
+
+        cur.execute(query, params)
         row = cur.fetchone()
 
         if row:
             canonical_id = row[0]
             _refresh_canonical_fields(conn, canonical_id, offer)
         else:
-            image_path = offer.get("imageUrl") or offer.get("image_url")
+            image_path = offer.get("imageUrl") or offer.get("image_url") or offer.get("cropped_image_path")
             cur.execute(
                 """
                 INSERT INTO canonical_products
@@ -128,8 +199,9 @@ def find_or_create_canonical(conn, store_product_id: str, offer: dict) -> str:
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                 RETURNING id
                 """,
-                (offer["product_name_clean"], offer["category"], offer["productType"], offer.get("brand"),
-                 offer.get("unit_size"), offer.get("unit_measurement"), offer.get("fat_percent"), offer.get("organic"), image_path),
+                (product_name, offer["category"], offer["productType"], brand,
+                 unit_size, offer.get("unit_measurement"), offer.get("fat_percent"),
+                 offer.get("organic"), image_path),
             )
             canonical_id = cur.fetchone()[0]
 
@@ -137,7 +209,12 @@ def find_or_create_canonical(conn, store_product_id: str, offer: dict) -> str:
             """
             INSERT INTO store_product_links (store_product_id, canonical_id, confidence, match_method)
             VALUES (%s, %s, 1.0, 'exact')
-            ON CONFLICT (store_product_id) DO UPDATE SET canonical_id = EXCLUDED.canonical_id
+            ON CONFLICT (store_product_id) DO UPDATE SET 
+                canonical_id = CASE
+                    WHEN store_product_links.match_method IN ('manual_merge', 'manual_correction')
+                    THEN store_product_links.canonical_id
+                    ELSE EXCLUDED.canonical_id
+                END
             """,
             (store_product_id, canonical_id),
         )
@@ -145,35 +222,45 @@ def find_or_create_canonical(conn, store_product_id: str, offer: dict) -> str:
 
 
 def _refresh_canonical_fields(conn, canonical_id: str, offer: dict):
-    """
-    Refresh display_name/organic/image_url on an existing canonical product, skipping
-    entirely if the product has been manually locked/edited by a human.
-    """
-    # Whole-Product Lock Check: If manually edited, lock product completely from AI updates
     with conn.cursor() as cur:
-        cur.execute("SELECT is_manually_edited FROM canonical_products WHERE id = %s", (canonical_id,))
+        cur.execute("SELECT is_manually_edited, image_url, display_name FROM canonical_products WHERE id = %s", (canonical_id,))
         row = cur.fetchone()
-        if row and row[0]:  # is_manually_edited is True!
+        if row and row[0]:  # Locked by human override
             return
+        existing_image_url = row[1] if row else None
+        existing_display_name = row[2] if row else None
 
     overridden = _get_overridden_fields(conn, canonical_id)
     updates, params = [], []
 
-    if "display_name" not in overridden:
+    # SAFEGUARD: Never overwrite an existing display name!
+    if "display_name" not in overridden and not existing_display_name and offer.get("product_name_clean"):
         updates.append("display_name = %s")
         params.append(offer["product_name_clean"])
+
     if "organic" not in overridden and offer.get("organic") not in (None, "unknown"):
         updates.append("organic = %s")
         params.append(offer["organic"])
-    
-    image_path = offer.get("imageUrl") or offer.get("image_url")
-    if "image_url" not in overridden and image_path:
-        # Only set canonical image_url if it's currently NULL
-        updates.append("image_url = COALESCE(image_url, %s)")
-        params.append(image_path)
+
+    incoming_image = offer.get("imageUrl") or offer.get("image_url") or offer.get("cropped_image_path")
+    if "image_url" not in overridden and incoming_image:
+        incoming_is_web = is_studio_image(incoming_image)
+        existing_is_crop = existing_image_url and ("_p" in existing_image_url)
+
+        # UPGRADE RULE:
+        # 1. If canonical currently has NO image -> take it.
+        # 2. If canonical has a flyer crop, but incoming is a clean web studio photo -> UPGRADE & OVERWRITE.
+        # 3. If canonical already has a web studio photo, but incoming is just a flyer crop -> REJECT (keep studio photo).
+        if not existing_image_url or (incoming_is_web and existing_is_crop):
+            updates.append("image_url = %s")
+            params.append(incoming_image)
+        elif not existing_image_url:
+            updates.append("image_url = COALESCE(image_url, %s)")
+            params.append(incoming_image)
 
     if not updates:
         return
+
     updates.append("updated_at = now()")
     params.append(canonical_id)
     with conn.cursor() as cur:
@@ -182,6 +269,8 @@ def _refresh_canonical_fields(conn, canonical_id: str, offer: dict):
 
 def insert_price_offer(conn, store_product_id: str, source_document_id: str | None,
                         week_start: str, week_end: str, offer: dict):
+    image_path = offer.get("cropped_image_path") or offer.get("imageUrl") or offer.get("image_url")
+
     with conn.cursor() as cur:
         cur.execute(
             """
@@ -210,14 +299,13 @@ def insert_price_offer(conn, store_product_id: str, source_document_id: str | No
                 offer["offerType"], offer.get("discount_percent_numeric"),
                 offer.get("multibuy_required_qty"), offer.get("multibuy_free_qty"),
                 offer.get("base_price"), offer.get("base_price_unit"), offer.get("base_price_source", "computed"),
-                offer.get("imageUrl"), offer.get("availabilityDateRange"),
+                image_path, offer.get("availabilityDateRange"),
             ),
         )
 
 
 def log_ingestion_run(conn, retailer_code: str, file_name: str, status: str,
                       page_count: int | None = None, offer_count: int = 0, error_message: str | None = None):
-    """Log an ingestion attempt (success, failure, or partial) to ingestion_logs table."""
     with conn.cursor() as cur:
         cur.execute(
             """

@@ -1,13 +1,6 @@
 """
-Reads extracted JSON files from extracted_json/, finds the corresponding PDF
-in downloads/, converts PDF pages to images, crops out individual product
-offer images based on Gemini's globalPageNumber + bounding boxes, and saves
-them to cropped_images/<retailer>/. Writes the crop path back onto each
-offer as imageUrl, so load_to_db.py can persist it to store_products.image_url
-and price_offers.cropped_image_path (the traceability mechanism -- see
-specs/01-data-model.md).
-
-Run this AFTER pdf_extractor.py and BEFORE load_to_db.py.
+Crops individual product offer images from PDF flyers based on bounding boxes.
+Skips cropping if a verified image (e.g. web studio photo) already exists on disk.
 """
 import os
 import re
@@ -15,6 +8,12 @@ import json
 import glob
 from pdf2image import convert_from_path
 from PIL import Image
+
+from db.db import get_conn, find_canonical_by_attributes
+try:
+    from ingestion.normalize import normalize_offer
+except ImportError:
+    from normalize import normalize_offer
 
 EXTRACTED_JSON_DIR = "extracted_json"
 DOWNLOAD_DIR = "downloads"
@@ -27,11 +26,10 @@ def slugify(text: str) -> str:
     text = str(text).lower().strip()
     text = re.sub(r"[^\w\s-]", "", text)
     text = re.sub(r"[-\s]+", "_", text)
-    return text[:40]
+    return text[:40].strip("_")
 
 
 def crop_image_from_box(page_image: Image.Image, box: list) -> Image.Image | None:
-    """box: [ymin, xmin, ymax, xmax] on a 0-1000 scale."""
     if not box or len(box) != 4:
         return None
     ymin, xmin, ymax, xmax = box
@@ -46,39 +44,27 @@ def crop_image_from_box(page_image: Image.Image, box: list) -> Image.Image | Non
     return page_image.crop((left, top, right, bottom))
 
 
-def _check_db_canonical_has_image(offer: dict) -> bool:
-    """Returns True ONLY if a matching canonical product has an image AND that file exists on disk."""
+def _has_existing_image_on_disk(conn, offer: dict) -> bool:
+    """Returns True if matching canonical item already has a photo that exists on disk."""
     try:
-        from db.db import get_conn
-        from ingestion.normalize import normalize_offer
         norm = normalize_offer(offer)
-        with get_conn() as conn:
-            with conn.cursor() as cur:
-                cur.execute(
-                    """
-                    SELECT image_url FROM canonical_products
-                    WHERE category = %s AND product_type = %s
-                      AND brand IS NOT DISTINCT FROM %s
-                      AND unit_size IS NOT DISTINCT FROM %s
-                      AND unit_measurement IS NOT DISTINCT FROM %s
-                      AND fat_percent IS NOT DISTINCT FROM %s
-                      AND image_url IS NOT NULL
-                    LIMIT 1
-                    """,
-                    (norm["category"], norm["productType"], norm.get("brand"),
-                     norm.get("unit_size"), norm.get("unit_measurement"), norm.get("fat_percent")),
-                )
-                row = cur.fetchone()
-                if row and row[0]:
-                    # Make sure the file in the database ACTUALLY exists on disk!
-                    db_image_path = row[0]
-                    return os.path.exists(db_image_path)
-                return False
+        match = find_canonical_by_attributes(
+            conn, 
+            norm["category"], 
+            norm["productType"], 
+            norm.get("brand"),
+            norm.get("unit_size"), 
+            norm.get("unit_measurement"), 
+            norm.get("fat_percent"),
+        )
+        if match and match.get("image_url"):
+            return os.path.exists(match["image_url"])
+        return False
     except Exception:
         return False
 
 
-def process_json_file(json_path: str):
+def process_json_file(conn, json_path: str):
     filename = os.path.basename(json_path)
     pdf_filename = filename.replace(".json", ".pdf")
     pdf_path = os.path.join(DOWNLOAD_DIR, pdf_filename)
@@ -92,7 +78,6 @@ def process_json_file(json_path: str):
 
     product_offers = data.get("productOffers", [])
     if not product_offers:
-        print(f"{filename}: no product offers to crop.")
         return
 
     retailer_code = data.get("retailerCode", "unknown")
@@ -100,24 +85,23 @@ def process_json_file(json_path: str):
     os.makedirs(retailer_crop_dir, exist_ok=True)
 
     print(f"Processing '{pdf_filename}'...")
-    
-    # Filter offers that actually need cropping (no imageUrl set & no canonical image in DB)
+
     offers_to_crop = []
     for idx, offer in enumerate(product_offers):
         existing_img = offer.get("imageUrl")
         if existing_img and os.path.exists(existing_img):
-            continue  # Only skip if the file ACTUALLY exists on disk!
-        if _check_db_canonical_has_image(offer):
-            # Canonical product already has an image, skip cropping
+            continue
+        # Skip if canonical item already has a clean studio photo on disk!
+        if _has_existing_image_on_disk(conn, offer):
             continue
         offers_to_crop.append((idx, offer))
 
     if not offers_to_crop:
-        print(f"  -> All {len(product_offers)} offers already have canonical images or imageUrl. Skipping PDF render.")
+        print(f"  -> All {len(product_offers)} offers already have studio/canonical images on disk. Skipping PDF render.")
         return
 
     try:
-        pages = convert_from_path(pdf_path, dpi=300)
+        pages = convert_from_path(pdf_path, dpi=150)
     except Exception as e:
         print(f"  ERROR: could not render PDF {pdf_path}: {e}")
         return
@@ -150,7 +134,7 @@ def process_json_file(json_path: str):
         with open(json_path, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
 
-    print(f"  -> cropped {cropped_count} new product images into '{retailer_crop_dir}/'.")
+    print(f"  -> Cropped {cropped_count} new product images into '{retailer_crop_dir}/'.")
 
 
 def main():
@@ -158,10 +142,12 @@ def main():
     if not json_files:
         print(f"No JSON files found in '{EXTRACTED_JSON_DIR}'. Run pdf_extractor.py first.")
         return
-    for json_file in json_files:
-        if os.path.basename(json_file).startswith("_debug"):
-            continue
-        process_json_file(json_file)
+
+    with get_conn() as conn:
+        for json_file in json_files:
+            if os.path.basename(json_file).startswith("_debug"):
+                continue
+            process_json_file(conn, json_file)
 
 
 if __name__ == "__main__":
