@@ -1,11 +1,12 @@
 import re
 import os
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from fastapi import APIRouter, Query, HTTPException
 from app.database import fetch_query, get_db_cursor
 from datetime import date
 
 router = APIRouter(tags=["Canonical Products"])
+
 
 class ProductOverrideSchema(BaseModel):
     display_name: str | None = None
@@ -19,11 +20,76 @@ class ProductOverrideSchema(BaseModel):
     image_url: str | None = None
     edited_by: str = "admin@retailoffers.com"
 
+
+class BatchOverrideSchema(BaseModel):
+    canonical_ids: list[str] = Field(..., description="List of canonical product UUIDs to update")
+    category: str | None = None
+    product_type: str | None = None
+    brand: str | None = None
+    organic: str | None = None
+    edited_by: str = "admin@retailoffers.com"
+
+
+# --------------------------------------------------------------------------
+# BATCH OVERRIDES (Multi-select)
+# --------------------------------------------------------------------------
+@router.post("/canonical-products/batch-override")
+def batch_product_override(payload: BatchOverrideSchema):
+    """
+    Applies batch updates (e.g. Brand, Category, Organic) to multiple canonical products,
+    locks them with is_manually_edited = true, and records audit entries.
+    """
+    if not payload.canonical_ids:
+        raise HTTPException(status_code=400, detail="No product IDs provided")
+
+    field_values = {
+        "category": payload.category,
+        "product_type": payload.product_type,
+        "brand": payload.brand,
+        "organic": payload.organic,
+    }
+    active_edits = {k: v for k, v in field_values.items() if v is not None and v != ""}
+    if not active_edits:
+        raise HTTPException(status_code=400, detail="No fields provided to update")
+
+    with get_db_cursor(commit=True) as cur:
+        edited_by = payload.edited_by or "admin@retailoffers.com"
+
+        set_clauses = [f"{field} = %s" for field in active_edits.keys()]
+        set_clauses.append("is_manually_edited = true")
+        set_clauses.append("updated_at = NOW()")
+
+        update_sql = f"""
+            UPDATE canonical_products 
+            SET {', '.join(set_clauses)} 
+            WHERE id = ANY(%s::uuid[]);
+        """
+        params = list(active_edits.values()) + [payload.canonical_ids]
+        cur.execute(update_sql, tuple(params))
+
+        for field, val in active_edits.items():
+            cur.execute("""
+                INSERT INTO product_overrides (canonical_id, field_name, override_value, edited_by, edited_at)
+                SELECT unnest(%s::uuid[]), %s, %s, %s, NOW()
+                ON CONFLICT (canonical_id, field_name)
+                DO UPDATE SET override_value = EXCLUDED.override_value,
+                              edited_by = EXCLUDED.edited_by,
+                              edited_at = NOW();
+            """, (payload.canonical_ids, field, str(val), edited_by))
+
+    return {
+        "status": "success",
+        "message": f"Updated {len(active_edits)} field(s) across {len(payload.canonical_ids)} products."
+    }
+
+
+# --------------------------------------------------------------------------
+# SINGLE PRODUCT OVERRIDES
+# --------------------------------------------------------------------------
 @router.post("/canonical-products/{canonical_id}/override")
 def create_product_override(canonical_id: str, payload: ProductOverrideSchema):
-    """Create/update overrides for a canonical product and lock it from AI pipeline updates."""
     edited_by = payload.edited_by or "admin@retailoffers.com"
-    
+
     field_values = {
         "display_name": payload.display_name,
         "category": payload.category,
@@ -40,64 +106,51 @@ def create_product_override(canonical_id: str, payload: ProductOverrideSchema):
     if not active_edits:
         raise HTTPException(status_code=400, detail="No fields provided to override")
 
-    try:
-        # Use connection pool context manager with commit=True
-        with get_db_cursor(commit=True) as cur:
-            # 1. Upsert into product_overrides table
-            for field, val in active_edits.items():
-                cur.execute(
-                    """
-                    INSERT INTO product_overrides (canonical_id, field_name, override_value, edited_by, edited_at)
-                    VALUES (%s, %s, %s, %s, NOW())
-                    ON CONFLICT (canonical_id, field_name)
-                    DO UPDATE SET override_value = EXCLUDED.override_value,
-                                  edited_by = EXCLUDED.edited_by,
-                                  edited_at = NOW();
-                    """,
-                    (canonical_id, field, str(val), edited_by)
-                )
-            
-            # 2. Update canonical_products table directly & lock product (is_manually_edited = true)
-            set_clauses = [f"{field} = %s" for field in active_edits.keys()]
-            set_clauses.append("is_manually_edited = true")
-            set_clauses.append("updated_at = NOW()")
-            
-            update_sql = f"UPDATE canonical_products SET {', '.join(set_clauses)} WHERE id = %s;"
-            params = list(active_edits.values()) + [canonical_id]
-            cur.execute(update_sql, tuple(params))
+    with get_db_cursor(commit=True) as cur:
+        for field, val in active_edits.items():
+            cur.execute(
+                """
+                INSERT INTO product_overrides (canonical_id, field_name, override_value, edited_by, edited_at)
+                VALUES (%s, %s, %s, %s, NOW())
+                ON CONFLICT (canonical_id, field_name)
+                DO UPDATE SET override_value = EXCLUDED.override_value,
+                              edited_by = EXCLUDED.edited_by,
+                              edited_at = NOW();
+                """,
+                (canonical_id, field, str(val), edited_by)
+            )
 
-        return {"status": "success", "message": f"Updated {len(active_edits)} field(s) for canonical product {canonical_id}"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to apply override: {e}")
+        set_clauses = [f"{field} = %s" for field in active_edits.keys()]
+        set_clauses.append("is_manually_edited = true")
+        set_clauses.append("updated_at = NOW()")
+
+        update_sql = f"UPDATE canonical_products SET {', '.join(set_clauses)} WHERE id = %s;"
+        params = list(active_edits.values()) + [canonical_id]
+        cur.execute(update_sql, tuple(params))
+
+    return {"status": "success", "message": f"Updated {len(active_edits)} field(s) for canonical product {canonical_id}"}
 
 
 @router.delete("/canonical-products/{canonical_id}/override")
 def revert_product_override(canonical_id: str):
-    """Delete all overrides for a canonical product and unlock it for AI pipeline management."""
-    try:
-        with get_db_cursor(commit=True) as cur:
-            # 1. Delete override records
-            cur.execute("DELETE FROM product_overrides WHERE canonical_id = %s;", (canonical_id,))
-            
-            # 2. Unlock product (is_manually_edited = false)
-            cur.execute(
-                "UPDATE canonical_products SET is_manually_edited = false, updated_at = NOW() WHERE id = %s;",
-                (canonical_id,)
-            )
+    with get_db_cursor(commit=True) as cur:
+        cur.execute("DELETE FROM product_overrides WHERE canonical_id = %s;", (canonical_id,))
+        cur.execute(
+            "UPDATE canonical_products SET is_manually_edited = false, updated_at = NOW() WHERE id = %s;",
+            (canonical_id,)
+        )
+    return {"status": "success", "message": f"Reverted overrides for canonical product {canonical_id}."}
 
-        return {"status": "success", "message": f"Reverted overrides for canonical product {canonical_id}. AI management unlocked."}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to revert override: {e}")
 
+# --------------------------------------------------------------------------
+# CATALOG, DETAILS & BRANDS
+# --------------------------------------------------------------------------
 @router.get("/canonical-brands")
 def get_canonical_brands(
     category: str | None = None,
     retailer_code: str | None = None,
     search: str | None = None
 ):
-    """
-    Fetch distinct brand names case-insensitively and cleanly sorted.
-    """
     where_clauses = [
         "cp.brand IS NOT NULL", 
         "cp.brand != 'N/A'", 
@@ -127,7 +180,6 @@ def get_canonical_brands(
 
     where_sql = " WHERE " + " AND ".join(where_clauses)
 
-    # Use a subquery with DISTINCT ON (LOWER(TRIM(brand))) to guarantee zero duplicate casings
     query = f"""
         WITH unique_brands AS (
             SELECT DISTINCT ON (LOWER(TRIM(cp.brand))) 
@@ -155,10 +207,6 @@ def get_canonical_products(
     sort_by: str = Query("updated_at"),
     sort_order: str = Query("desc")
 ):
-    """
-    Fetch canonical products with server-side pagination, fuzzy search, 
-    category, brand & retailer filters, and dynamic sorting.
-    """
     allowed_sort_fields = {
         "updated_at": "cp.updated_at",
         "display_name": "cp.display_name",
@@ -296,7 +344,6 @@ def get_canonical_product_details(canonical_id: str):
     """
     history = fetch_query(history_query, (canonical_id,))
 
-    # Enrich each offer with PDF deep-link
     for item in history:
         pnum, purl = extract_flyer_info(
             item.get("cropped_image_path"),
@@ -319,26 +366,19 @@ def get_canonical_product_details(canonical_id: str):
         "active_offers": list(active_offers.values()),
         "price_history": history
     }
-    
+
+
 @router.delete("/canonical-products/{canonical_id}")
 def delete_canonical_product(canonical_id: str):
-    """
-    Permanently deletes a canonical product and cleanly unlinks 
-    any associated store products, overrides, and watchlist entries.
-    """
     with get_db_cursor(commit=True) as cur:
-        # 1. Check if the product exists
         cur.execute("SELECT id, display_name FROM canonical_products WHERE id = %s;", (canonical_id,))
         prod = cur.fetchone()
         if not prod:
             raise HTTPException(status_code=404, detail="Canonical product not found")
 
-        # 2. Explicitly clean up all foreign key references
         cur.execute("DELETE FROM store_product_links WHERE canonical_id = %s;", (canonical_id,))
         cur.execute("DELETE FROM product_overrides WHERE canonical_id = %s;", (canonical_id,))
         cur.execute("DELETE FROM watchlist_items WHERE canonical_id = %s;", (canonical_id,))
-
-        # 3. Delete the canonical product
         cur.execute("DELETE FROM canonical_products WHERE id = %s;", (canonical_id,))
 
         return {
