@@ -1,7 +1,8 @@
 """
 Billa Web Catalog Scraper.
-Crawls all Billa food and drink categories, downloads clean studio images
-directly into cropped_images/billa/, and saves billa_scraped_data/billa_catalog.json.
+Crawls all Billa food and drink categories, handles lazy-loaded images,
+detects organic/Bio badges, downloads clean studio images directly into
+cropped_images/billa/, and saves billa_scraped_data/billa_catalog.json.
 """
 
 import os
@@ -25,7 +26,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 BASE_CATEGORY_URL = "https://shop.billa.at/kategorie"
 WAIT_TIME_SECONDS = 15
 
-# Default to 100 pages per category for full scrape (or override via env var)
+# Default to 200 pages per category for full scrape (or override via env var)
 MAX_PAGES_PER_CATEGORY = int(os.environ.get("BILLA_MAX_PAGES", 200))
 
 # Save images directly into the shared volume mounted for FastAPI
@@ -125,6 +126,65 @@ def extract_billa_brand(title: str) -> str | None:
             if b == "nöm": return "NÖM"
             return b.title()
     return None
+
+
+def extract_billa_image_url(card) -> str | None:
+    """
+    Extracts the real high-res Commercetools CDN image URL,
+    avoiding Billa's lazy-load base64 blank placeholders.
+    """
+    # 1. Check <picture> <source srcset="..."> tags (often contains the real URL even before scroll)
+    sources = card.select('[data-test="product-tile-image"] source, picture source')
+    for source in sources:
+        srcset = source.get('srcset') or source.get('data-srcset')
+        if srcset:
+            urls = re.findall(r'(https?://[^\s,]+)', srcset)
+            # Filter for actual product images, not marketing badges
+            product_urls = [u for u in urls if "commercetools" in u or "billa" in u]
+            if product_urls:
+                return product_urls[-1]  # Highest resolution URL
+
+    # 2. Check <img> tag
+    img_tag = card.select_one('[data-test="product-tile-image"] img') or card.select_one('img.ws-product-image')
+    if img_tag:
+        # Check data-src or data-original first
+        for attr in ['data-src', 'data-original', 'data-lazy', 'srcset']:
+            val = img_tag.get(attr)
+            if val and val.startswith('http'):
+                return val
+
+        # Check standard src, strictly ignoring base64 placeholders
+        src = img_tag.get('src')
+        if src and src.startswith('http') and not src.startswith('data:'):
+            return src
+
+    return None
+
+
+def detect_billa_organic(card, full_name: str, brand: str | None) -> str:
+    """
+    Detects if a Billa product is certified organic ('yes' vs 'no').
+    Checks brand, title, on-card tooltip text, and badge image filenames.
+    """
+    text_to_check = f"{full_name} {brand or ''}".lower()
+
+    # 1. Check Brand & Title signatures
+    if any(b in text_to_check for b in ["ja! natürlich", "billa bio", "demeter", "bioland", "natur*pur"]):
+        return "yes"
+    if re.search(r"\bbio\b", text_to_check) or "biologisch" in text_to_check:
+        return "yes"
+
+    # 2. Check Billa's DOM Badge tooltips & image filenames (e.g. bio_badge_eckig.png)
+    badge_elements = card.select("[data-test='product-badge-tooltip-text'], .ws-product-badges img")
+    for badge in badge_elements:
+        badge_text = badge.text.strip().lower()
+        badge_alt = badge.get("alt", "").strip().lower()
+        badge_src = (badge.get("src") or badge.get("data-src") or "").lower()
+
+        if "bio" in badge_text or "bio" in badge_alt or "bio_badge" in badge_src:
+            return "yes"
+
+    return "no"
 
 
 def resolve_product_type_and_category(full_name: str, cat_cfg: dict) -> tuple[str, str]:
@@ -236,29 +296,6 @@ def resolve_product_type_and_category(full_name: str, cat_cfg: dict) -> tuple[st
     return cat, cat_cfg["default_type"]
 
 
-def detect_billa_organic(card, full_name: str, brand: str | None) -> str:
-    text_to_check = f"{full_name} {brand or ''}".lower()
-
-    # 1. Brand or Title check
-    if any(b in text_to_check for b in ["ja! natürlich", "billa bio", "demeter", "bioland", "natur*pur"]):
-        return "yes"
-    if re.search(r"\bbio\b", text_to_check) or "biologisch" in text_to_check:
-        return "yes"
-
-    # 2. Check Tooltip Text AND Badge Image Filename
-    badge_elements = card.select("[data-test='product-badge-tooltip-text'], .ws-product-badges img")
-    for badge in badge_elements:
-        badge_text = badge.text.strip().lower()
-        badge_alt = badge.get("alt", "").strip().lower()
-        badge_src = (badge.get("src") or badge.get("data-src") or "").lower()
-
-        # Catches the tooltip text "Bio" OR the image "bio_badge_eckig.png"
-        if "bio" in badge_text or "bio" in badge_alt or "bio_badge" in badge_src:
-            return "yes"
-
-    return "no"
-
-
 def parse_billa_product_card(card, cat_cfg: dict) -> dict:
     title_el = card.select_one('[data-test="product-title"]') or card.select_one('.ws-product-title')
     full_name = title_el.text.strip() if title_el else "Unknown Product"
@@ -277,16 +314,12 @@ def parse_billa_product_card(card, cat_cfg: dict) -> dict:
             cents = re.sub(r'\D', '', super_val.text)
             current_price = f"{main_val.text.strip()}.{cents}"
 
-    img_tag = card.select_one('[data-test="product-tile-image"] img') or card.select_one('img.ws-product-image')
-    image_url = None
-    if img_tag:
-        image_url = img_tag.get('src') or img_tag.get('data-src')
-
+    # Extract clean image URL, skipping base64 placeholders
+    image_url = extract_billa_image_url(card)
     local_image_path = download_image_locally(image_url, full_name)
+
     category, product_type = resolve_product_type_and_category(full_name, cat_cfg)
     detected_brand = extract_billa_brand(full_name)
-
-    # --- DETECT ORGANIC STATUS ---
     is_organic = detect_billa_organic(card, full_name, detected_brand)
 
     return {
@@ -299,7 +332,7 @@ def parse_billa_product_card(card, cat_cfg: dict) -> dict:
         "originalPrice": None,
         "remoteImageUrl": image_url,
         "localImagePath": local_image_path,
-        "organic": is_organic,  # <-- Added: "yes" or "no"
+        "organic": is_organic,
     }
 
 
@@ -311,7 +344,10 @@ def handle_billa_cookie_banner(driver):
             shadow_host = driver.find_element(By.CSS_SELECTOR, host_selector)
             if shadow_host:
                 shadow_root = shadow_host.shadow_root
-                deny_btn = shadow_root.find_element(By.CSS_SELECTOR, "button#deny, button[data-action-type='deny'], button.uc-deny-button, button#accept")
+                deny_btn = shadow_root.find_element(
+                    By.CSS_SELECTOR, 
+                    "button#deny, button[data-action-type='deny'], button.uc-deny-button, button#accept"
+                )
                 deny_btn.click()
                 print("   -> Billa cookie banner dismissed via ShadowRoot! ✅")
                 time.sleep(1.5)
@@ -331,6 +367,8 @@ def handle_billa_cookie_banner(driver):
             if (btn) { btn.click(); return true; }
         }
     }
+    var lightBtn = document.querySelector('button#deny') || document.querySelector('button#accept');
+    if (lightBtn) { lightBtn.click(); return true; }
     return false;
     """
     try:
@@ -403,6 +441,13 @@ def scrape_billa_catalog(max_pages: int = MAX_PAGES_PER_CATEGORY):
                     except TimeoutException:
                         break
 
+                # --- TRIGGER LAZY LOADING FOR ALL CARDS ON THE PAGE ---
+                # Scroll halfway, then to bottom to activate all lazy-loaded images
+                driver.execute_script("window.scrollTo(0, document.body.scrollHeight / 2);")
+                time.sleep(0.4)
+                driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                time.sleep(0.8)
+
                 page_soup = BeautifulSoup(driver.page_source, "html.parser")
                 cards = page_soup.select(PRODUCT_CARD_SELECTOR)
                 print(f"     Found {len(cards)} products.")
@@ -425,9 +470,12 @@ def scrape_billa_catalog(max_pages: int = MAX_PAGES_PER_CATEGORY):
         json.dump(all_scraped_products, f, ensure_ascii=False, indent=2)
 
     image_count = sum(1 for p in all_scraped_products if p.get("localImagePath"))
+    bio_count = sum(1 for p in all_scraped_products if p.get("organic") == "yes")
+
     print("\n" + "=" * 60)
     print("BILLA SCRAPE COMPLETE SUMMARY:")
     print(f" • Total Products Scraped  : {len(all_scraped_products)}")
+    print(f" • Bio / Organic Products   : {bio_count}")
     print(f" • Studio Photos Downloaded : {image_count}")
     print(f" • Output Saved to          : {OUTPUT_JSON_PATH}")
     print(f" • Photos Saved to          : {IMAGE_DIR}/")
