@@ -1,7 +1,7 @@
 """
 Standalone Spar Web Catalog Scraper.
 Covers all Food and Drink subcategories, extracts metadata,
-and downloads studio product images to local disk.
+detects organic/Bio status from DOM badges, and downloads studio product images to local disk.
 No database or ingestion pipeline dependencies.
 """
 
@@ -132,6 +132,34 @@ def download_image_locally(image_url: str, product_name: str) -> str | None:
     except Exception as e:
         print(f"      [!] Failed to download image for '{product_name}': {e}")
     return None
+
+
+def detect_spar_organic(card, full_name: str, brand: str | None) -> str:
+    """
+    Detects if a Spar product is organic ('yes' vs 'no').
+    Inspects Spar's DOM badges (.product-tile__badges), image alt/src,
+    and brand/title keywords (e.g. SPAR Natur*pur, Bio).
+    """
+    text_to_check = f"{full_name} {brand or ''}".lower()
+
+    # 1. Check Spar's organic trademark brands & title keywords
+    if any(b in text_to_check for b in ["natur*pur", "natur pur", "demeter", "bioland", "ja! natürlich"]):
+        return "yes"
+    if re.search(r"\bbio\b", text_to_check) or "biologisch" in text_to_check:
+        return "yes"
+
+    # 2. Check Spar's on-card badge icons (.product-tile__badges)
+    badges = card.select(".product-tile__badges span, .product-tile__badges img, [data-tosca*='product-tile-badge']")
+    for badge in badges:
+        title = (badge.get("title") or "").strip().lower()
+        alt = (badge.get("alt") or "").strip().lower()
+        src = (badge.get("src") or "").strip().lower()
+
+        # Matches span title="Bio", img alt="Bio", or img src containing "produktweltBIO"
+        if "bio" in title or "bio" in alt or "produktweltbio" in src or "biologisch" in title:
+            return "yes"
+
+    return "no"
 
 
 def resolve_product_type_and_category(full_name: str, cat_cfg: dict) -> tuple[str, str]:
@@ -303,6 +331,9 @@ def parse_product_card(card, cat_cfg: dict) -> dict:
     # Resolve category and product_type
     category, product_type = resolve_product_type_and_category(full_name, cat_cfg)
 
+    # Detect Bio/Organic status from Spar badges
+    is_organic = detect_spar_organic(card, full_name, brand_raw)
+
     return {
         "productName": full_name,
         "category": category,
@@ -313,6 +344,7 @@ def parse_product_card(card, cat_cfg: dict) -> dict:
         "originalPrice": old_price,
         "remoteImageUrl": image_url,
         "localImagePath": local_image_path,
+        "organic": is_organic,  # <-- Added: "yes" or "no"
     }
 
 
@@ -456,9 +488,12 @@ def main():
         json.dump(all_scraped_products, f, ensure_ascii=False, indent=2)
 
     image_count = sum(1 for p in all_scraped_products if p.get("localImagePath"))
+    bio_count = sum(1 for p in all_scraped_products if p.get("organic") == "yes")
+
     print("\n" + "=" * 60)
-    print("SCRAPE COMPLETE SUMMARY:")
+    print("SPAR SCRAPE COMPLETE SUMMARY:")
     print(f" • Total Products Scraped  : {len(all_scraped_products)}")
+    print(f" • Bio / Organic Products   : {bio_count}")
     print(f" • Studio Photos Downloaded : {image_count}")
     print(f" • JSON Output Saved to     : {OUTPUT_JSON_PATH}")
     print(f" • Images Directory         : {IMAGE_DIR}/")

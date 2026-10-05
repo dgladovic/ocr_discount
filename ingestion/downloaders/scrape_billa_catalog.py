@@ -26,7 +26,7 @@ BASE_CATEGORY_URL = "https://shop.billa.at/kategorie"
 WAIT_TIME_SECONDS = 15
 
 # Default to 100 pages per category for full scrape (or override via env var)
-MAX_PAGES_PER_CATEGORY = int(os.environ.get("BILLA_MAX_PAGES", 100))
+MAX_PAGES_PER_CATEGORY = int(os.environ.get("BILLA_MAX_PAGES", 200))
 
 # Save images directly into the shared volume mounted for FastAPI
 IMAGE_DIR = os.path.join("cropped_images", "billa")
@@ -236,6 +236,29 @@ def resolve_product_type_and_category(full_name: str, cat_cfg: dict) -> tuple[st
     return cat, cat_cfg["default_type"]
 
 
+def detect_billa_organic(card, full_name: str, brand: str | None) -> str:
+    text_to_check = f"{full_name} {brand or ''}".lower()
+
+    # 1. Brand or Title check
+    if any(b in text_to_check for b in ["ja! natürlich", "billa bio", "demeter", "bioland", "natur*pur"]):
+        return "yes"
+    if re.search(r"\bbio\b", text_to_check) or "biologisch" in text_to_check:
+        return "yes"
+
+    # 2. Check Tooltip Text AND Badge Image Filename
+    badge_elements = card.select("[data-test='product-badge-tooltip-text'], .ws-product-badges img")
+    for badge in badge_elements:
+        badge_text = badge.text.strip().lower()
+        badge_alt = badge.get("alt", "").strip().lower()
+        badge_src = (badge.get("src") or badge.get("data-src") or "").lower()
+
+        # Catches the tooltip text "Bio" OR the image "bio_badge_eckig.png"
+        if "bio" in badge_text or "bio" in badge_alt or "bio_badge" in badge_src:
+            return "yes"
+
+    return "no"
+
+
 def parse_billa_product_card(card, cat_cfg: dict) -> dict:
     title_el = card.select_one('[data-test="product-title"]') or card.select_one('.ws-product-title')
     full_name = title_el.text.strip() if title_el else "Unknown Product"
@@ -263,6 +286,9 @@ def parse_billa_product_card(card, cat_cfg: dict) -> dict:
     category, product_type = resolve_product_type_and_category(full_name, cat_cfg)
     detected_brand = extract_billa_brand(full_name)
 
+    # --- DETECT ORGANIC STATUS ---
+    is_organic = detect_billa_organic(card, full_name, detected_brand)
+
     return {
         "productName": full_name,
         "category": category,
@@ -273,6 +299,7 @@ def parse_billa_product_card(card, cat_cfg: dict) -> dict:
         "originalPrice": None,
         "remoteImageUrl": image_url,
         "localImagePath": local_image_path,
+        "organic": is_organic,  # <-- Added: "yes" or "no"
     }
 
 
